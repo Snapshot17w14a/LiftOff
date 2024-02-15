@@ -1,0 +1,122 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - develop
+  paths:
+    include:
+    - 'DryWetMidi/*'
+    - 'Resources/CI/test-net-package-integration.yaml'
+    - 'Resources/CI/Templates/stage-build-native-libs.yaml'
+    - 'Resources/CI/Templates/step-create-ports-macos.yaml'
+    - 'Resources/CI/Templates/step-create-ports-windows.yaml'
+    - 'Resources/CI/Templates/job-build-package.yaml'
+    - 'Resources/CI/Templates/step-setup-framework-variables.yaml'
+    - 'Resources/PackageIntegrationTestUtilities/DwmNetConsoleApp/*'
+    - 'Resources/Native/*'
+
+pr: none
+
+variables:
+- group: DryWetMIDI-Common-Variables
+
+name: TestPackageIntegration_Net_$(SourceBranchName)_$(LibraryVersion)$(Rev:.r)
+
+stages:
+- template: Templates/stage-build-native-libs.yaml
+
+- stage: BuildPackage
+  displayName: Build package
+  pool:
+    vmImage: 'windows-latest'
+  jobs:
+  - template: Templates/job-build-package.yaml
+    parameters:
+      buildConfiguration: $(BuildConfiguration)
+      packageType: 'Full'
+
+- stage: TestPackageIntegration
+  displayName: Test package integration
+  jobs:
+  - job: TestPackageIntegration
+    displayName: Test package integration
+    strategy:
+      matrix:
+        Windows_Net:
+          vmImage: 'windows-2019'
+          framework: 'Net'
+        macOS_Net:
+          vmImage: 'macos-latest'
+          framework: 'Net'
+        Windows_NetCore31:
+          vmImage: 'windows-2019'
+          framework: 'NetCore'
+        macOS_NetCore31:
+          vmImage: 'macos-latest'
+          framework: 'NetCore'
+    pool:
+      vmImage: $(vmImage)
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: Download NuGet package
+      inputs:
+        source: 'current'
+        path: '$(Pipeline.Workspace)\NuGetPackage'
+        artifact: NuGetPackage
+    
+    - template: Templates/step-setup-framework.yaml
+      parameters:
+        framework: '$(framework)'
+    
+    - template: Templates/step-create-ports-windows.yaml
+      parameters:
+        enabled: contains(variables.vmImage, 'windows')
+    
+    - template: Templates/step-create-ports-macos.yaml
+      parameters:
+        enabled: contains(variables.vmImage, 'macos')
+    
+    - task: PowerShell@2
+      displayName: Add package to the project
+      inputs:
+        targetType: 'inline'
+        script: |
+          $path = Resolve-Path 'Resources\PackageIntegrationTestUtilities\DwmNetConsoleApp\DwmNetConsoleApp\DwmNetConsoleApp.csproj'
+          dotnet add "$path" package Melanchall.DryWetMidi -v $(LibraryVersion) -s "$(Pipeline.Workspace)\NuGetPackage"
+          
+    - task: PowerShell@2
+      displayName: Set csproj elements
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "Parsing csproj..."
+          [xml]$xml = Get-Content -Path 'Resources\PackageIntegrationTestUtilities\DwmNetConsoleApp\DwmNetConsoleApp\DwmNetConsoleApp.csproj'
+          
+          Write-Host "Setting TFM $(tfm)..."
+          $xml.Project.PropertyGroup.TargetFramework = '$(tfm)'
+          
+          Write-Host "Saving csproj..."
+          $path = Resolve-Path 'Resources\PackageIntegrationTestUtilities\DwmNetConsoleApp\DwmNetConsoleApp\DwmNetConsoleApp.csproj'
+          $xml.Save($path)
+          
+          Write-Host "Displaying csproj content..."
+          $content = Get-Content -Path 'Resources\PackageIntegrationTestUtilities\DwmNetConsoleApp\DwmNetConsoleApp\DwmNetConsoleApp.csproj'
+          Write-Host $content
+
+    - task: PowerShell@2
+      displayName: Restore packages
+      inputs:
+        targetType: 'inline'
+        script: |
+          $path = Resolve-Path 'Resources\PackageIntegrationTestUtilities\DwmNetConsoleApp\DwmNetConsoleApp\DwmNetConsoleApp.csproj'
+          dotnet nuget add source "$(Pipeline.Workspace)\NuGetPackage"
+          dotnet restore "$path"
+
+    - task: PowerShell@2
+      displayName: Run test program
+      inputs:
+        targetType: 'inline'
+        script: |
+          $path = Resolve-Path 'Resources\PackageIntegrationTestUtilities\DwmNetConsoleApp\DwmNetConsoleApp\DwmNetConsoleApp.csproj'
+          dotnet run --project "$path" --no-restore

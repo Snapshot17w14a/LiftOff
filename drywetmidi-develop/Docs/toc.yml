@@ -1,0 +1,11 @@
+- name: Overview
+  href: index.md
+- name: API
+  href: obj/api/
+- name: Obsolete
+  href: obsolete/obsolete.md
+- name: Articles
+  href: articles/
+  topicHref: articles/dev/Support.md
+- name: GitHub
+  href: https://github.com/melanchall/drywetmidi

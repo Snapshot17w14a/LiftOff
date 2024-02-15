@@ -1,0 +1,25 @@
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+- group: DryWetMIDI-Common-Variables
+- name: prereleaseNumber
+  value: $[counter(variables['LibraryVersion'], 1)]
+
+name: BuildLibrary_Nativeless_PreRelease_$(SourceBranchName)_$(LibraryVersion)$(Rev:.r)
+
+stages:
+- stage: BuildBinaries
+  displayName: Build binaries
+  pool:
+    vmImage: 'windows-latest'
+  jobs:
+  - template: Templates/job-build-package.yaml
+    parameters:
+      buildConfiguration: $(BuildConfiguration)
+      prereleaseNumber: $(prereleaseNumber)
+      packageType: 'Nativeless'

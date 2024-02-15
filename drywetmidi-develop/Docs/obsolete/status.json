@@ -1,0 +1,116 @@
+{
+  "OBS19": {
+    "Hint": "Use Splitter.SplitByObjects method.",
+    "ObsoleteFromVersion": "6.1.1",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS18": {
+    "Hint": "Use Resizer class.",
+    "ObsoleteFromVersion": "6.1.1",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS17": {
+    "Hint": "Use Merger class.",
+    "ObsoleteFromVersion": "6.1.1",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS16": {
+    "Hint": "Use TimedEvent constructor and add an object manually.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS15": {
+    "Hint": "Use SetTime/SetLength methods from TimedObjectUtilities/LengthedObjectUtilities.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS14": {
+    "Hint": "Use SetTime method from TimedObjectUtilities.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS13": {
+    "Hint": "Use Quantizer class.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS12": {
+    "Hint": "Use Splitter class.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS11": {
+    "Hint": "Use TimedObjectsManager class.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS10": {
+    "Hint": "Use Quantizer class passing QuantizingSettings with its RandomizingSettings property set.",
+    "ObsoleteFromVersion": "6.1.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "7.0.0"
+  },
+  "OBS9": {
+    "Hint": "Use AddObjects methods from TimedObjectUtilities.",
+    "ObsoleteFromVersion": "5.2.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS8": {
+    "Hint": "Use ToFile method from TimedObjectUtilities.",
+    "ObsoleteFromVersion": "5.2.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS7": {
+    "Hint": "Use ToTrackChunk method from TimedObjectUtilities.",
+    "ObsoleteFromVersion": "5.2.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS6": {
+    "Hint": "Use GetObjects methods from GetObjectsUtilities.",
+    "ObsoleteFromVersion": "5.2.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS5": {
+    "Hint": "Use GetObjects methods from GetObjectsUtilities.",
+    "ObsoleteFromVersion": "5.2.0",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS4": {
+    "Hint": "Use GetTempoChanges or GetTempoAtTime methods of TempoMap.",
+    "ObsoleteFromVersion": "5.1.2",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS3": {
+    "Hint": "Use GetTimeSignatureChanges or GetTimeSignatureAtTime methods of TempoMap.",
+    "ObsoleteFromVersion": "5.1.2",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS2": {
+    "Hint": "Use ReaderSettings.BufferingPolicy = BufferingPolicy.BufferAllData.",
+    "ObsoleteFromVersion": "5.1.2",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  },
+  "OBS1": {
+    "Hint": "Use corresponding properties of WritingSettings.",
+    "ObsoleteFromVersion": "5.1.2",
+    "InLibrary": false,
+    "RemovedFromVersion": "6.0.0"
+  }
+}

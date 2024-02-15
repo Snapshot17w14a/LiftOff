@@ -1,0 +1,42 @@
+trigger:
+  branches:
+    include:
+    - master
+    - develop
+  paths:
+    include:
+    - 'Docs/*'
+    - 'Resources/Utilities/CheckLinks/*'
+    - 'Resources/CI/check-docs-links.yaml'
+
+pr:
+  branches:
+    include:
+    - develop
+  paths:
+    include:
+    - 'Docs/*'
+    - 'Resources/Utilities/CheckLinks/*'
+    - 'Resources/CI/check-docs-links.yaml'
+
+schedules:
+- cron: '0 0,9,15,20 * * *'
+  displayName: Check docs links schedule
+  branches:
+    include:
+    - master
+    - develop
+  always: 'true'
+
+pool:
+  vmImage: 'windows-latest'
+
+name: CheckDocsLinks_$(SourceBranchName)_$(Rev:r)
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Check links'
+  inputs:
+    command: 'run'
+    projects: 'Resources/Utilities/CheckLinks/CheckLinks/CheckLinks.csproj'
+    arguments: '-c Release -- "$(Build.SourcesDirectory)/Docs" "*.md"'

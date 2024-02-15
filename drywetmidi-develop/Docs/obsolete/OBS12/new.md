@@ -1,0 +1,5 @@
+* [Splitter](xref:Melanchall.DryWetMidi.Tools.Splitter)
+* [Splitter.SplitObjectsByStep](xref:Melanchall.DryWetMidi.Tools.Splitter.SplitObjectsByStep*)
+* [Splitter.SplitObjectsByGrid](xref:Melanchall.DryWetMidi.Tools.Splitter.SplitObjectsByGrid*)
+* [Splitter.SplitObjectsAtDistance](xref:Melanchall.DryWetMidi.Tools.Splitter.SplitObjectsAtDistance*)
+* [Splitter.SplitObjectsByPartsNumber](xref:Melanchall.DryWetMidi.Tools.Splitter.SplitObjectsByPartsNumber*)

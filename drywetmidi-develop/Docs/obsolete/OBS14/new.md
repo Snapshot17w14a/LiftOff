@@ -1,0 +1,1 @@
+* [TimedObjectUtilities.SetTime](xref:Melanchall.DryWetMidi.Interaction.TimedObjectUtilities.SetTime*)

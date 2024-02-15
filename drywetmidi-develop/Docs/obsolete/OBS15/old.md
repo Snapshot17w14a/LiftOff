@@ -1,0 +1,2 @@
+* `NotesManagingUtilities.SetTimeAndLength*`
+* `ChordsManagingUtilities.SetTimeAndLength*`

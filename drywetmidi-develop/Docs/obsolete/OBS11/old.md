@@ -1,0 +1,3 @@
+* `TimedEventsManager`
+* `NotesManager`
+* `ChordsManager`

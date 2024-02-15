@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net48;net8.0</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <Configurations>Debug;Release;Coverage;DebugTest;ReleaseTest</Configurations>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>strongnamekey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Coverage'">
+    <DefineConstants>COVERAGE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='DebugTest'">
+    <DefineConstants>TRACE;TEST</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='ReleaseTest'">
+    <DefineConstants>TRACE;TEST</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="SendTestData.c" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DryWetMidi.Tests.Common\Melanchall.DryWetMidi.Tests.Common.csproj" />
+    <ProjectReference Include="..\DryWetMidi\Melanchall.DryWetMidi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\DryWetMidi\Melanchall_DryWetMidi_Native32.dll">
+      <Link>Melanchall_DryWetMidi_Native32.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\DryWetMidi\Melanchall_DryWetMidi_Native64.dll">
+      <Link>Melanchall_DryWetMidi_Native64.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\DryWetMidi\Melanchall_DryWetMidi_Native64.dylib">
+      <Link>Melanchall_DryWetMidi_Native64.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

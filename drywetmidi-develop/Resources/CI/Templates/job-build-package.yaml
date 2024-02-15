@@ -1,0 +1,119 @@
+parameters:
+- name: buildConfiguration
+  displayName: 'Build configuration'
+  type: string
+- name: prereleaseNumber
+  displayName: 'Pre-release number'
+  type: string
+  default: ''
+- name: packageType
+  displayName: 'Package type'
+  type: string
+
+jobs:
+- job: BuildPackage
+  displayName: Build package
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: Download native libraries
+    condition: eq('${{ parameters.packageType }}', 'Full')
+    inputs:
+      source: 'current'
+      path: '$(Pipeline.Workspace)\NativeLibraries'
+  
+  - task: PowerShell@2
+    displayName: Setup metadata
+    inputs:
+      targetType: 'inline'
+      script: |
+        $filePath = Resolve-Path "DryWetMidi\Melanchall.DryWetMidi.csproj"
+        $xml = New-Object xml
+        $xml.PreserveWhitespace = $true
+        $xml.Load($filePath)
+        
+        $version = $xml.Project.PropertyGroup[1].Version
+        Write-Host "Current version is $version"
+        $newVersion = "$(LibraryVersion)"
+        $xml.Project.PropertyGroup[1].Version = $newVersion
+        Write-Host "New version: $($xml.Project.PropertyGroup[1].Version)"
+        
+        Write-Host "Setting release notes up..."
+        $xml.Project.PropertyGroup[1].PackageReleaseNotes = "https://github.com/melanchall/drywetmidi/releases/tag/v$(LibraryVersion)"
+        Write-Host "Release notes: $($xml.Project.PropertyGroup[1].PackageReleaseNotes)"
+        
+        Write-Host "Setting copyright up..."
+        $xml.Project.PropertyGroup[1].Copyright = "Copyright © Melanchall $((Get-Date).Year)"
+        Write-Host "Copyright: $($xml.Project.PropertyGroup[1].Copyright)"
+        
+        $xml.Save($filePath)
+  
+  - task: PowerShell@2
+    displayName: Setup prerelease version
+    condition: not(eq('${{ parameters.prereleaseNumber }}', ''))
+    inputs:
+      targetType: 'inline'
+      script: |
+        $filePath = Resolve-Path "DryWetMidi\Melanchall.DryWetMidi.csproj"
+        $xml = New-Object xml
+        $xml.PreserveWhitespace = $true
+        $xml.Load($filePath)
+        $version = $xml.Project.PropertyGroup[1].Version
+        Write-Host "Current version is $version"
+        Write-Host "Prerelease number is ${{ parameters.prereleaseNumber }}"
+        $newVersion = $version + "-prerelease" + ${{ parameters.prereleaseNumber }}
+        $xml.Project.PropertyGroup[1].Version = $newVersion
+        Write-Host "New version: $($xml.Project.PropertyGroup[1].Version)"
+        Write-Host "Removing release notes..."
+        $xml.Project.PropertyGroup[1].PackageReleaseNotes = ""
+        Write-Host "Release notes: $($xml.Project.PropertyGroup[1].PackageReleaseNotes)"
+        $xml.Save($filePath)
+  
+  - template: step-setup-framework.yaml
+    parameters:
+      framework: 'Net'
+  
+  - template: step-generate-doc-links.yaml
+  
+  - task: PowerShell@2
+    displayName: Generate obsolete API hints
+    inputs:
+      targetType: filePath
+      filePath: '$(Build.SourcesDirectory)/Resources/Scripts/Generate obsolete API hints.ps1'
+  
+  - ${{ if eq(parameters.packageType, 'Nativeless') }}:  
+    - template: step-setup-nativeless-project.yaml
+  
+  - task: PowerShell@2
+    displayName: Copy native libraries near csproj
+    condition: eq('${{ parameters.packageType }}', 'Full')
+    inputs:
+      targetType: 'inline'
+      script: |
+        Copy-Item -Path "$(Pipeline.Workspace)\NativeLibraries\**\*.dll" -Destination "DryWetMidi"
+        Copy-Item -Path "$(Pipeline.Workspace)\NativeLibraries\**\*.dylib" -Destination "DryWetMidi"
+  
+  - task: DotNetCoreCLI@2
+    displayName: Build project
+    inputs:
+      command: 'build'
+      projects: |
+        DryWetMidi/Melanchall.DryWetMidi.csproj
+      arguments: '--configuration ${{ parameters.buildConfiguration }}'
+  
+  - task: DotNetCoreCLI@2
+    displayName: Create NuGet package
+    inputs: 
+      command: 'pack'
+      projects: 'DryWetMidi/Melanchall.DryWetMidi.csproj'
+      outputDir: '$(Build.ArtifactStagingDirectory)\NuGetPackage'
+      packagesToPack: 'DryWetMidi/Melanchall.DryWetMidi.csproj'
+      nobuild: true
+      buildProperties: 'RepositoryBranch="$(Build.SourceBranchName)'
+  
+  - task: PublishPipelineArtifact@1
+    displayName: Publish 'NuGetPackage' artifact
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)\NuGetPackage'
+      artifact: NuGetPackage

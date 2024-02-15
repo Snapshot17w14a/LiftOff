@@ -1,0 +1,13 @@
+parameters:
+- name: tfm
+  displayName: 'TFM'
+  type: string
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Build DryWetMidi.Tests
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(TestBuildConfiguration) --framework ${{ parameters.tfm }} -bl:build.binlog'
+    projects: |
+      DryWetMidi.Tests/Melanchall.DryWetMidi.Tests.csproj

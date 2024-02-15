@@ -11,10 +11,10 @@ namespace GXPEngine
 	{
 		public string name;
 		private Collider _collider;
-		
+
 		private List<GameObject> _children = new List<GameObject>();
 		private GameObject _parent = null;
-		
+
 		public bool visible = true;
 		private bool destroyed = false;
 
@@ -30,17 +30,17 @@ namespace GXPEngine
 		/// If <c>true</c>, then the virtual function createCollider will be called, which can be overridden to create a collider that 
 		/// will be added to the collision manager. 
 		/// </param> 
-		public GameObject(bool addCollider=false)
+		public GameObject(bool addCollider = false)
 		{
 			if (addCollider) {
-				_collider = createCollider ();
+				_collider = createCollider();
 			}
 		}
 
 		/// <summary>
 		/// Create and return a collider to use for this game object. Null is allowed.
 		/// </summary>
-		protected virtual Collider createCollider () {
+		protected virtual Collider createCollider() {
 			return null;
 		}
 
@@ -55,7 +55,7 @@ namespace GXPEngine
 		/// The index.
 		/// </value>
 		public int Index {
-			get { 
+			get {
 				if (parent == null) return -1;
 				return parent._children.IndexOf(this);
 			}
@@ -67,7 +67,7 @@ namespace GXPEngine
 		internal Collider collider {
 			get { return _collider; }
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														game
 		//------------------------------------------------------------------------------------------------------------------------
@@ -89,11 +89,11 @@ namespace GXPEngine
 		/// Set includeTriggers to true to include trigger colliders in the list, and 
 		/// includeSolid to include solid (=non-trigger) colliders.
 		/// </summary>
-		public GameObject[] GetCollisions (bool includeTriggers = true, bool includeSolid = true)
+		public GameObject[] GetCollisions(bool includeTriggers = true, bool includeSolid = true)
 		{
 			return game.GetGameObjectCollisions(this, includeTriggers, includeSolid);
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Render
 		//------------------------------------------------------------------------------------------------------------------------
@@ -101,23 +101,23 @@ namespace GXPEngine
 		/// This function is called by the renderer. You can override it to change this object's rendering behaviour.
 		/// When not inside the GXPEngine package, specify the parameter as GXPEngine.Core.GLContext.
 		/// This function was made public to accomodate split screen rendering. Use SetViewPort for that.
- 		/// </summary>
+		/// </summary>
 		/// <param name='glContext'>
 		/// Gl context, will be supplied by internal caller.
 		/// </param>
 		public virtual void Render(GLContext glContext) {
 			if (visible) {
 				glContext.PushMatrix(matrix);
-				
-				RenderSelf (glContext);
+
+				RenderSelf(glContext);
 				foreach (GameObject child in GetChildren(false)) {
 					child.Render(glContext);
 				}
-				
+
 				glContext.PopMatrix();
 			}
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														RenderSelf
 		//------------------------------------------------------------------------------------------------------------------------
@@ -138,8 +138,8 @@ namespace GXPEngine
 		/// </summary>
 		public GameObject parent {
 			get { return _parent; }
-			set { 
-				bool wasActive = InHierarchy ();
+			set {
+				bool wasActive = InHierarchy();
 				if (_parent != null) {
 					_parent.removeChild(this);
 					_parent = null;
@@ -147,15 +147,15 @@ namespace GXPEngine
 				_parent = value;
 				if (value != null) {
 					if (destroyed) {
-						throw new Exception ("Destroyed game objects cannot be added to the game!");
+						throw new Exception("Destroyed game objects cannot be added to the game!");
 					}
 					_parent.addChild(this);
 				}
-				bool isActive = InHierarchy ();
+				bool isActive = InHierarchy();
 				if (wasActive && !isActive) {
-					UnSubscribe ();
+					UnSubscribe();
 				} else if (!wasActive && isActive) {
-					Subscribe ();
+					Subscribe();
 				}
 			}
 		}
@@ -167,7 +167,7 @@ namespace GXPEngine
 		/// Subclasses can implement this method to clean up resources once on destruction. 
 		/// Will be called by the engine when the game object is destroyed.
 		/// </summary>
-		protected virtual void OnDestroy ()
+		protected virtual void OnDestroy()
 		{
 			//empty
 		}
@@ -179,7 +179,7 @@ namespace GXPEngine
 		/// Destroy this instance, and removes it from the game. To complete garbage collection, you must nullify all 
 		/// your own references to this object.
 		/// </summary>
-		public virtual void Destroy ()
+		public virtual void Destroy()
 		{
 			destroyed = true;
 			// Detach from parent (and thus remove it from the managers):
@@ -202,7 +202,7 @@ namespace GXPEngine
 		/// To complete garbage collection, you must nullify all your own references to this object.
 		/// </summary>
 		public void LateDestroy() {
-			HierarchyManager.Instance.LateDestroy (this);
+			HierarchyManager.Instance.LateDestroy(this);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -215,7 +215,7 @@ namespace GXPEngine
 		/// Child object to add.
 		/// </param>
 		public void AddChild(GameObject child) {
-			child.parent = this;	
+			child.parent = this;
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -228,7 +228,7 @@ namespace GXPEngine
 		/// Child object to add.
 		/// </param>
 		public void LateAddChild(GameObject child) {
-			HierarchyManager.Instance.LateAdd (this, child);
+			HierarchyManager.Instance.LateAdd(this, child);
 		}
 
 		/// <summary>
@@ -245,7 +245,7 @@ namespace GXPEngine
 		/// Removes this GameObject from the hierarchy, *after* finishing the current Update + OnCollision loops.
 		/// </summary>
 		public void LateRemove() {
-			HierarchyManager.Instance.LateRemove (this);
+			HierarchyManager.Instance.LateRemove(this);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -257,13 +257,13 @@ namespace GXPEngine
 		/// <param name='child'>
 		/// Child object to remove.
 		/// </param>
-		public void RemoveChild (GameObject child)
+		public void RemoveChild(GameObject child)
 		{
 			if (child.parent == this) {
 				child.parent = null;
 			}
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														removeChild()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ namespace GXPEngine
 			_children.Remove(child);
 
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														addChild()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -280,7 +280,7 @@ namespace GXPEngine
 			_children.Add(child);
 			return;
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														AddChildAt()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ namespace GXPEngine
 			if (index < 0) index = 0;
 			if (index >= _children.Count) index = _children.Count - 1;
 			_children.Remove(child);
-			_children.Insert(index, child);			
+			_children.Insert(index, child);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -313,7 +313,7 @@ namespace GXPEngine
 		/// *after* finishing the current Update + OnCollision loops.
 		/// </summary>
 		public void LateAddChildAt(GameObject child, int index) {
-			HierarchyManager.Instance.LateAdd (this, child, index);
+			HierarchyManager.Instance.LateAdd(this, child, index);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ namespace GXPEngine
 			}
 			return false;
 		}
-				
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetChildren()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -356,9 +356,9 @@ namespace GXPEngine
 		/// The function returns System.Collections.Generic.List<GameObject>.
 		/// (If safe=false, then the method is slightly faster, but modifying the list will break the engine!)
 		/// </summary>
-		public List<GameObject> GetChildren(bool safe=true) {
+		public List<GameObject> GetChildren(bool safe = true) {
 			if (safe) {
-				return new List<GameObject> (_children);
+				return new List<GameObject>(_children);
 			} else {
 				return _children;
 			}
@@ -371,7 +371,7 @@ namespace GXPEngine
 		public int GetChildCount() {
 			return _children.Count;
 		}
-		
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														SetChildIndex()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -395,16 +395,16 @@ namespace GXPEngine
 		}
 
 		private void Subscribe() {
-			game.Add (this);
+			game.Add(this);
 			foreach (GameObject child in _children) {
-				child.Subscribe ();
+				child.Subscribe();
 			}
 		}
 
 		private void UnSubscribe() {
-			game.Remove (this);
+			game.Remove(this);
 			foreach (GameObject child in _children) {
-				child.UnSubscribe ();
+				child.UnSubscribe();
 			}
 		}
 
@@ -421,7 +421,7 @@ namespace GXPEngine
 		/// The other game object.
 		/// </param>
 		virtual public bool HitTest(GameObject other) {
-			return _collider != null && other._collider != null && _collider.HitTest (other._collider);
+			return _collider != null && other._collider != null && _collider.HitTest(other._collider);
 		}
 
 		/// <summary>
@@ -435,17 +435,17 @@ namespace GXPEngine
 		/// If a time of impact below 1 is returned, the normal will be the collision normal 
 		///   (otherwise it is undefined).
 		/// </summary>
-		virtual public float TimeOfImpact (GameObject other, float vx, float vy, out Vector2 normal) {
-			normal = new Vector2 ();
-			if (_collider == null || other._collider == null || parent==null)
+		virtual public float TimeOfImpact(GameObject other, float vx, float vy, out Vector2 normal) {
+			normal = new Vector2();
+			if (_collider == null || other._collider == null || parent == null)
 				return float.MaxValue;
 			// Compute world space velocity:
 			//Vector2 p1 = parent.TransformPoint (vx, vy);
 			//Vector2 p0 = parent.TransformPoint (0, 0);
-			Vector2 worldVelocity=parent.TransformDirection(vx,vy);
-			float TOI=_collider.TimeOfImpact (other._collider, 
+			Vector2 worldVelocity = parent.TransformDirection(vx, vy);
+			float TOI = _collider.TimeOfImpact(other._collider,
 				//p1.x-p0.x, p1.y-p0.y, 
-				worldVelocity.x,worldVelocity.y,
+				worldVelocity.x, worldVelocity.y,
 				out normal
 			);
 			return TOI;
@@ -467,9 +467,9 @@ namespace GXPEngine
 			foreach (GameObject other in objectsToCheck) {
 				if (other.collider != null && other.collider.isTrigger) continue;
 				Vector2 newNormal;
-				float newTOI = TimeOfImpact (other, vx, vy, out newNormal);
+				float newTOI = TimeOfImpact(other, vx, vy, out newNormal);
 				if (newTOI < minTOI) {
-					col = new Collision (this, other, newNormal, newTOI);
+					col = new Collision(this, other, newNormal, newTOI);
 					minTOI = newTOI;
 				}
 			}
@@ -491,10 +491,10 @@ namespace GXPEngine
 		virtual public Collision MoveUntilCollision(float vx, float vy) {
 			x += vx;
 			y += vy;
-			GameObject[] overlaps = GetCollisions (false,true);
+			GameObject[] overlaps = GetCollisions(false, true);
 			x -= vx;
 			y -= vy;
-			return MoveUntilCollision (vx, vy, overlaps);
+			return MoveUntilCollision(vx, vy, overlaps);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -512,8 +512,8 @@ namespace GXPEngine
 		/// </param>
 		virtual public bool HitTestPoint(float x, float y) {
 			return _collider != null && _collider.HitTestPoint(x, y);
-		}		
-		
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														TransformPoint()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -528,11 +528,11 @@ namespace GXPEngine
 		/// The y coordinate to transform.
 		/// </param>
 		public override Vector2 TransformPoint(float x, float y) {
-			Vector2 ret = base.TransformPoint (x, y);
+			Vector2 ret = base.TransformPoint(x, y);
 			if (parent == null) {
 				return ret;
 			} else {
-				return parent.TransformPoint (ret.x, ret.y);
+				return parent.TransformPoint(ret.x, ret.y);
 			}
 		}
 
@@ -577,11 +577,11 @@ namespace GXPEngine
 		/// The y coordinate to transform.
 		/// </param>
 		public override Vector2 TransformDirection(float x, float y) {
-			Vector2 ret = base.TransformDirection (x, y);
+			Vector2 ret = base.TransformDirection(x, y);
 			if (parent == null) {
 				return ret;
 			} else {
-				return parent.TransformDirection (ret.x, ret.y);
+				return parent.TransformDirection(ret.x, ret.y);
 			}
 		}
 
@@ -620,7 +620,7 @@ namespace GXPEngine
 		/// [this] game object, then this argument is ignored and x and y are assumed to be in screen space.
 		/// </param>
 		public Vector2 InverseTransformPoint(float x, float y, GameObject fromParentSpace) {
-			if (parent == null || parent==fromParentSpace) {
+			if (parent == null || parent == fromParentSpace) {
 				return base.InverseTransformPoint(x, y);
 			} else {
 				Vector2 ret = parent.InverseTransformPoint(x, y, fromParentSpace);
@@ -644,7 +644,7 @@ namespace GXPEngine
 				return base.InverseTransformDirection(x, y);
 			} else {
 				Vector2 ret = parent.InverseTransformDirection(x, y);
-				return base.InverseTransformDirection (ret.x, ret.y);
+				return base.InverseTransformDirection(ret.x, ret.y);
 			}
 		}
 
@@ -663,7 +663,7 @@ namespace GXPEngine
 			}
 			foreach (GameObject child in _children) {
 				GameObject result = child.FindObjectOfType(type);
-				if (result!=null) {
+				if (result != null) {
 					return result;
 				}
 			}
@@ -677,13 +677,13 @@ namespace GXPEngine
 		/// The given type must inherit from GameObject.
 		/// </summary>
 		/// <returns>A descendant of the given type, if it exists.</returns>
-		public T FindObjectOfType<T>() where T:GameObject {
+		public T FindObjectOfType<T>() where T : GameObject {
 			if (this is T) {
 				return (T)this;
 			}
 			foreach (GameObject child in _children) {
 				T result = child.FindObjectOfType<T>();
-				if (result!=null) {
+				if (result != null) {
 					return result;
 				}
 			}
@@ -719,13 +719,13 @@ namespace GXPEngine
 		/// The type must inherit from GameObject.
 		/// </summary>
 		/// <returns>All descendants of the given type.</returns>
-		public T[] FindObjectsOfType<T>() where T:GameObject {
+		public T[] FindObjectsOfType<T>() where T : GameObject {
 			List<T> results = new List<T>();
 			FindObjectsOfType<T>(results);
 			return results.ToArray();
 		}
 
-		private void FindObjectsOfType<T>(List<T> results) where T:GameObject {
+		private void FindObjectsOfType<T>(List<T> results) where T : GameObject {
 			if (this is T) {
 				results.Add((T)this);
 			}
@@ -740,7 +740,6 @@ namespace GXPEngine
 		public override string ToString() {
 			return "[" + this.GetType().Name + "::" + name + "]";
 		}
-				
 	}
 }
 

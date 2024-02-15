@@ -1,0 +1,63 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - develop
+  paths:
+    include:
+    - 'DryWetMidi/*'
+    - 'Docs/*'
+    - 'Resources/CI/build-artifacts-docs.yaml'
+    - 'Resources/CI/Templates/step-build-docs.yaml'
+    - 'README.md'
+
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+- group: DryWetMIDI-Common-Variables
+
+name: BuildDocs_$(SourceBranchName)_$(LibraryVersion)$(Rev:.r)
+
+steps:
+- task: PowerShell@2
+  displayName: Generate obsolete API hints
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)/Resources/Scripts/Generate obsolete API hints.ps1'
+
+- task: DotNetCoreCLI@2
+  displayName: Build project
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(BuildConfiguration)'
+    projects: 'DryWetMidi/Melanchall.DryWetMidi.csproj'
+
+- task: PowerShell@2
+  displayName: Setup docs pages
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)/Resources/Scripts/Setup docs.ps1'
+
+- task: PowerShell@2
+  displayName: Generate obsolete API section
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)/Resources/Scripts/Generate obsolete API section.ps1'
+
+- template: Templates/step-build-docs.yaml
+
+- task: PublishPipelineArtifact@1
+  displayName: Publish 'Docs' artifact
+  inputs:
+    targetPath: 'Docs\_site'
+    artifact: Docs
+    
+- task: PublishPipelineArtifact@1
+  displayName: Publish 'docfx.json' artifact
+  inputs:
+    targetPath: 'Docs\docfx.json'
+    artifact: docfx.json

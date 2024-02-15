@@ -1,0 +1,1 @@
+* [LengthedObjectUtilities.SetLength](xref:Melanchall.DryWetMidi.Interaction.LengthedObjectUtilities.SetLength*)
