@@ -11,11 +11,11 @@ namespace GXPEngine
         private static int[] _inputKeys = { Key.ONE, Key.TWO, Key.THREE, Key.FOUR, Key.FIVE, Key.SIX };
 
         //The speed of the bullets and the enemies
-        private static float _bulletSpeed = 1.5f;
-        private static float _enemySpeed = 1f;
+        private static float _bulletSpeed = 0.3f;
+        private static float _enemySpeed = 0.1f;
 
         //The time in second between enemy spawns
-        private static float _enemySpawnInterval = 5;
+        private static float _enemySpawnInterval = 2;
 
 
         //Getters and Setters

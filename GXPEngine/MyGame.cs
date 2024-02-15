@@ -9,7 +9,7 @@ public class MyGame : Game {
 	MidiFile midiFile = MidiFile.Read("list.mid");
 	Note[] allNotes;
 	Player player;
-	public MyGame() : base(800, 600, false)     // Create a window that's 800x600 and NOT fullscreen
+	public MyGame() : base(1920, 1080, false)
 	{
 		Sprite background = new Sprite("background.png", false, false);
 		background.SetOrigin(background.width / 2, background.height / 2);

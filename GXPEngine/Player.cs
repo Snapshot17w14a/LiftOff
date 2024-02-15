@@ -38,7 +38,7 @@ namespace GXPEngine
                 if (Input.GetKeyDown(DataStorage.InputKeys[i]))
                 {
                     deltaVelocity = DataStorage.TargetVectors[i] - new Vector2(x, y);
-                    deltaVelocity = deltaVelocity.Normalize() * DataStorage.BulletSpeed;
+                    deltaVelocity = deltaVelocity.Normalize() * DataStorage.BulletSpeed * Time.deltaTime;
                 }
                 if (deltaVelocity.x != 0 || deltaVelocity.y != 0)
                 {

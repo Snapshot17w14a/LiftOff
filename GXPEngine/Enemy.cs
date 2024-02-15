@@ -15,7 +15,7 @@ namespace GXPEngine
             SetOrigin(width / 2, height / 2);
             collider.isTrigger = true;
             game.AddChild(this);
-            _velocity = velocity * DataStorage.EnemySpeed;
+            _velocity = velocity * DataStorage.EnemySpeed * Time.deltaTime;
         }
 
         protected void Update()
