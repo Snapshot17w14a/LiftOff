@@ -23,9 +23,6 @@ namespace GXPEngine
             x += _velocity.x;
             y += _velocity.y;
         }
-        public void OnHit()
-        {
-            LateDestroy();
-        }
+        public void OnHit() => LateDestroy();
     }
 }
