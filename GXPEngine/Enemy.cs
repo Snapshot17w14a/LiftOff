@@ -10,12 +10,14 @@ namespace GXPEngine
     internal class Enemy : Sprite
     {
         private Vector2 _velocity;
+        private readonly DataStorage _dataStorage;
         public Enemy(Vector2 velocity) : base("triangle.png")
         {
             SetOrigin(width / 2, height / 2);
             collider.isTrigger = true;
             game.AddChild(this);
-            _velocity = velocity * DataStorage.EnemySpeed * Time.deltaTime;
+            _dataStorage = DataStorage.Instance;
+            _velocity = velocity * _dataStorage.EnemySpeed * Time.deltaTime;
         }
 
         protected void Update()

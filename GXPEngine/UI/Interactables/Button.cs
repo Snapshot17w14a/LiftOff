@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static GXPEngine.Scene;
 
 namespace GXPEngine.UI.Interactables
 {
     internal class Button : Sprite
     {
-        public Button(string filename, int x, int y, Scene.Alignment horizontal, Scene.Alignment vertical) : base(filename, false, false)
-        {
-            SetXY(x, y);
-        }
-
-        
+        private readonly Scene _nextScene;
+        public Button(string filename) : base(filename, false, true) { collider.isTrigger = true; }
+        public Button(string filename, Scene nextScene) : base(filename, false, true) { _nextScene = nextScene; collider.isTrigger = true; }
 
         public void OnClick()
         {
-            Console.WriteLine("Button clicked");
+            if(_nextScene != null) { SceneManager.Instance.LoadScene(_nextScene); }
+            else Console.WriteLine("Button Clicked!");
         }
     }
 }

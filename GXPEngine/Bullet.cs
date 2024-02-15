@@ -31,9 +31,8 @@ namespace GXPEngine
             GameObject[] collision = GetCollisions(true, false);
             foreach (GameObject gameObject in collision)
             {
-                if (gameObject is Enemy)
+                if (gameObject is Enemy enemy)
                 {
-                    Enemy enemy = (Enemy)gameObject;
                     enemy.OnHit();
                     LateDestroy();
                 }
