@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Q/ZZxFj8Ug8rMHQfXY1BZuFnMLyQ+cslIEZ4304iDsHmFppzQRKltkbpWvhjAaEoRjarmvhKGCzJovaFSa+CMA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\kevin\\OneDrive - Saxion\\Documents\\SaxionCMGT\\courses\\Liftoff\\GXPEngine\\GXPEngine.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\kevin\\.nuget\\packages\\melanchall.drywetmidi\\7.0.2\\melanchall.drywetmidi.7.0.2.nupkg.sha512",
+    "C:\\Users\\kevin\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

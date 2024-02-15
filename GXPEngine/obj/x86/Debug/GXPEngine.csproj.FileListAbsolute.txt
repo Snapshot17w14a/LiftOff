@@ -1,0 +1,13 @@
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\GXPEngine.exe.config
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\GXPEngine.exe
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\GXPEngine.pdb
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.exe
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.pdb
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Melanchall_DryWetMidi_Native32.dll
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Melanchall_DryWetMidi_Native64.dll
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Melanchall_DryWetMidi_Native64.dylib
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Melanchall.DryWetMidi.dll
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Newtonsoft.Json.dll
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CopyComplete
