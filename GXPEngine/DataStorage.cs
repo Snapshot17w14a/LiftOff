@@ -12,10 +12,10 @@ namespace GXPEngine
 
         //The speed of the bullets and the enemies
         private static float _bulletSpeed = 1.5f;
-        private static float _enemySpeed = 0.5f;
+        private static float _enemySpeed = 1f;
 
         //The time in second between enemy spawns
-        private static float _enemySpawnInterval = 2;
+        private static float _enemySpawnInterval = 5;
 
 
         //Getters and Setters
