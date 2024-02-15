@@ -14,9 +14,9 @@ namespace GXPEngine.UI
 
         public enum Alignment
         {
-            Min,
-            Center,
-            Max
+            MIN,
+            CENTER,
+            MAX
         }
         public Scene() { }
 
@@ -91,25 +91,25 @@ namespace GXPEngine.UI
             int anchory = 0;
             switch (_horizontalAlignment)
             {
-                case Alignment.Min:
+                case Alignment.MIN:
                     anchorx = 0;
                     break;
-                case Alignment.Center:
+                case Alignment.CENTER:
                     anchorx = obj.width / 2;
                     break;
-                case Alignment.Max:
+                case Alignment.MAX:
                     anchorx = obj.width;
                     break;
             }
             switch (_verticalAlignment)
             {
-                case Alignment.Min:
+                case Alignment.MIN:
                     anchory = 0;
                     break;
-                case Alignment.Center:
+                case Alignment.CENTER:
                     anchory = obj.height / 2;
                     break;
-                case Alignment.Max:
+                case Alignment.MAX:
                     anchorx = obj.height;
                     break;
             }

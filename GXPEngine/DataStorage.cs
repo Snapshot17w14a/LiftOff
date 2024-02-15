@@ -32,8 +32,8 @@ namespace GXPEngine
         //The time in second between enemy spawns
         private readonly float _enemySpawnInterval = 2;
 
-        //
-        private readonly bool _useDebug = true;
+        //Set to true if you want to print the mouse data, and use other debug features
+        private readonly bool _useDebug = false;
 
         //The current test scene
         private Scene _testScene;
@@ -44,8 +44,12 @@ namespace GXPEngine
         {
             _testScene = new Scene(); //Create a new Scene
             _testScene.SetBackground("background.png"); //Set the background of the scene
+            //_testScene.SetAlignment(Scene.Alignment.CENTER, Scene.Alignment.CENTER); //Set the alignment of the scene
             //_testScene.CreateButton("square.png", 400, 300); //Create a button with the given filename and position
             //_testScene.CreateButton("square.png", 400, 400, new Scene()); //Create a button with the given filename and position
+            //EasyDraw _testSceneCanvas = _testScene.Canvas; //Get the canvas of the scene
+            //_testSceneCanvas.Fill(0, 0, 0); //Fill the canvas with the given color
+            //_testSceneCanvas.Text("Test Scene", 400, 300); //Write the given text on the canvas
             _sceneManager.LoadScene(_testScene); //Load the scene
             if(_useDebug) Game.main.OnAfterStep += PrintMouseData; //Print the mouse data
         }

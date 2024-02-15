@@ -9,6 +9,7 @@ namespace GXPEngine
         {
             SetOrigin(width / 2, height / 2);
             scale = 0.2f;
+            game.AddChild(this);
             collider.isTrigger = true;
             _velocity = velocity;
         }
