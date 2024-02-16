@@ -1,17 +1,18 @@
-﻿using GXPEngine.Core;
+﻿using System;
+using GXPEngine.Core;
 
 namespace GXPEngine.LevelManager
 {
     internal class NoteObject : Sprite
     {
         private readonly double _timeInstantiated;
-        private readonly float _assignedTime;
+        private readonly double _assignedTime;
         private Vector2 _spawnLocation;
         private Vector2 _tapLocation;
         private int _index;
 
-        public float AssignedTime => _assignedTime;
-        public NoteObject(float assignedTime, int laneIndex) : base("circle.png", false, false)
+        public double AssignedTime => _assignedTime;
+        public NoteObject(double assignedTime, int laneIndex) : base("circle.png", false, false)
         {
             SetOrigin(width / 2, height / 2);
             _timeInstantiated = Level.GetAudioSourceTime();
@@ -26,11 +27,7 @@ namespace GXPEngine.LevelManager
         {
             double timeSinceInstantiated = Level.GetAudioSourceTime() - _timeInstantiated;
             float t = (float)(timeSinceInstantiated / Level.NoteTime);
-            if (t > 1.2f)
-            {
-                Level.LevelLanes[_index].RemoveNoteFromList(this);
-                LateDestroy();
-            }
+            if (t > 1.2f) LateDestroy();
             else
             {
                 Vector2 position = Vector2.Lerp(_spawnLocation, _tapLocation, t);
@@ -38,5 +35,7 @@ namespace GXPEngine.LevelManager
                 y = position.y;
             }
         }
+
+        protected override void OnDestroy() { Level.LevelLanes[_index].RemoveNoteFromList(this); }
     }
 }

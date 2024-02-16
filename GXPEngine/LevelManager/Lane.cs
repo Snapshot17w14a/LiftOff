@@ -26,11 +26,11 @@ namespace GXPEngine.LevelManager
             _inputKey = DataStorage.Instance.InputKeys[index];
             _noteRestiction = laneNote;
             _index = index;
-            CreateHitNoteMidi();
-            DataStorage.Instance.MainGame.OnBeforeStep += Update;
+            CreateHitNoteTrack();
+            DataStorage.Instance.MainGame.OnAfterStep += Update;
         }
 
-        private void CreateHitNoteMidi()
+        private void CreateHitNoteTrack()
         {
             SevenBitNumber noteNumber = Melanchall.DryWetMidi.MusicTheory.Note.Get(_noteRestiction, 4).NoteNumber;
             var noteOnEvent = new NoteOnEvent(noteNumber, (SevenBitNumber)100);
@@ -56,20 +56,24 @@ namespace GXPEngine.LevelManager
             {
                 if (Level.GetAudioSourceTime() >= _timeStamps[spawnIndex] - Level.NoteTime)
                 {
-                    NoteObject note = new NoteObject((float)_timeStamps[spawnIndex], _index);
-                    _notesObjects.Add(note);
+                    _notesObjects.Add(new NoteObject(_timeStamps[spawnIndex], _index));
                     spawnIndex++;
                 }
             }
             if(Input.GetKeyDown(_inputKey) && _notesObjects.Count != 0)
             {
                 double audioTime = Level.GetAudioSourceTime() - (Level.InputDelay / 1000f);
-                if (Math.Abs(audioTime - _notesObjects[0].AssignedTime) <= Level.MarginOfError) Level.LevelTrackChunks.Add(_hitChunk);
+                if (Math.Abs(audioTime - _notesObjects[0].AssignedTime) <= Level.MarginOfError)
+                {
+                    Level.LevelTrackChunks.Add(_hitChunk);
+                    Level.LevelScoreManager.Hit();
+                }
+                else Level.LevelScoreManager.Miss();
                 _notesObjects[0].LateDestroy();
                 _notesObjects.RemoveAt(0);
             }
         }
 
-        public void RemoveNoteFromList(NoteObject obj) => _notesObjects.Remove(obj);
+        public void RemoveNoteFromList(NoteObject obj) => Console.WriteLine(_notesObjects.Remove(obj));
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 
@@ -19,13 +20,14 @@ namespace GXPEngine.LevelManager
 
         private void GetData()
         {
-            Melanchall.DryWetMidi.Interaction.Note[] array = midiFile.GetNotes().ToArray();
+            Note[] array = midiFile.GetNotes().ToArray();
             foreach (var lane in Level.LevelLanes) lane.SetTimeStamps(array);
             _startDelay = true;
         }
 
         private void Update()
         {
+            Console.Clear();
             if (_startDelay)
             {
                 _startTimer += Time.deltaTime;

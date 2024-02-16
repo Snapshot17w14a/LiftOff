@@ -22,11 +22,11 @@ namespace GXPEngine
         private readonly Game _main = Game.main;
 
         //The coodinates of the targets where the enemies will spawn, and where the player can shoot at
-        private readonly Vector2[] _targetVectors = { new Vector2(60, 175), new Vector2(960, 35), new Vector2(1860, 175), new Vector2(1860, 900), new Vector2(960, 1040), new Vector2(60, 900) };
-        private readonly Vector2[] _tapVectors = { new Vector2(760, 450), new Vector2(960, 370), new Vector2(1160, 450), new Vector2(1160, 600), new Vector2(960, 676), new Vector2(760, 600) };
+        private readonly Vector2[] _targetVectors = { new Vector2(410, 0), new Vector2(1500, 0), new Vector2(1920, 530), new Vector2(1500, 1080), new Vector2(385, 1080), new Vector2(0, 540) };
+        private readonly Vector2[] _tapVectors = { new Vector2(845, 390), new Vector2(1080, 390), new Vector2(1185, 530), new Vector2(1075, 660), new Vector2(845, 660), new Vector2(735, 530) };
 
         //The keys that the player can use to shoot at the targets
-        private readonly int[] _inputKeys = { Key.R, Key.T, Key.Y, Key.H, Key.G, Key.F };
+        private readonly int[] _inputKeys = { Key.E, Key.O, Key.K, Key.M, Key.C, Key.D };
 
         //The speed of the bullets and the enemies
         private readonly float _bulletSpeed = 0.3f;
@@ -39,7 +39,7 @@ namespace GXPEngine
         private readonly float _songDelay = 2; //The delay in seconds before the song starts
 
         //Set to true if you want to print the mouse data, and use other debug features
-        private readonly bool _useDebug = true;
+        private readonly bool _useDebug = false;
 
         //The current test scene
         private Scene _testScene;
