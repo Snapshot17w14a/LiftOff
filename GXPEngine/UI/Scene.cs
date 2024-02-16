@@ -5,7 +5,7 @@ namespace GXPEngine.UI
 {
     internal class Scene : GameObject
     {
-        private readonly EasyDraw _canvas = new EasyDraw(Game.main.width, Game.main.height);
+        private readonly EasyDraw _canvas = new EasyDraw(Game.main.width, Game.main.height, false);
         private Sprite _background;
         private Alignment _verticalAlignment;
         private Alignment _horizontalAlignment;

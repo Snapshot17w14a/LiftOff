@@ -10,4 +10,4 @@ C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\
 C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Melanchall_DryWetMidi_Native64.dylib
 C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Melanchall.DryWetMidi.dll
 C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\bin\Debug\Newtonsoft.Json.dll
-C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CopyComplete
+C:\Users\kevin\OneDrive - Saxion\Documents\SaxionCMGT\courses\Liftoff\GXPEngine\obj\x86\Debug\GXPEngine.csproj.Up2Date

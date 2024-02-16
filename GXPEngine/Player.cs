@@ -26,9 +26,9 @@ namespace GXPEngine
         }
         private void Update()
         {
-            _spawnTimer += Time.deltaTime;
-            Shoot();
-            TEMPSpawnEnemy();
+            //_spawnTimer += Time.deltaTime;
+            //Shoot();
+            //TEMPSpawnEnemy();
         }
 
         // This method is temporary and will be removed in the final version
@@ -52,7 +52,7 @@ namespace GXPEngine
                     deltaVelocity = _dataStorage.TargetVectors[i] - new Vector2(x, y);
                     deltaVelocity = deltaVelocity.Normalize() * _dataStorage.BulletSpeed * Time.deltaTime;
                 }
-                if (deltaVelocity.x != 0 || deltaVelocity.y != 0) new Bullet(deltaVelocity) { x = x, y = y };
+                if (deltaVelocity.x != 0 || deltaVelocity.y != 0) { new Bullet(deltaVelocity) { x = x, y = y }; }
             }
         }
     }

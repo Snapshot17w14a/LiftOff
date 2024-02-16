@@ -50,6 +50,11 @@
     <Compile Include="GXPEngine\AddOns\Gizmos.cs" />
     <Compile Include="GXPEngine\AddOns\SpriteBatch.cs" />
     <Compile Include="GXPEngine\AddOns\TiledLoader.cs" />
+    <Compile Include="LevelManager\Lane.cs" />
+    <Compile Include="LevelManager\Level.cs" />
+    <Compile Include="LevelManager\LevelManager.cs" />
+    <Compile Include="LevelManager\NoteObject.cs" />
+    <Compile Include="LevelManager\ScoreManager.cs" />
     <Compile Include="LevelManager\SongManager.cs" />
     <Compile Include="MyGame.cs" />
     <Compile Include="GXPEngine\Core\Canvas.cs" />
