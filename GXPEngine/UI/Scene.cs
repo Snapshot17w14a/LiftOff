@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using GXPEngine.UI.Interactables;
+using GXPEngine.LevelManager;
+using System;
 
 namespace GXPEngine.UI
 {
@@ -9,9 +11,10 @@ namespace GXPEngine.UI
         private Sprite _background;
         private Alignment _verticalAlignment;
         private Alignment _horizontalAlignment;
+        private Level _sceneLevel;
         public List<Button> Buttons { get; } = new List<Button>();
         public EasyDraw Canvas => _canvas;
-
+        public Level SceneLevel => _sceneLevel;
         public enum Alignment
         {
             MIN,
@@ -84,6 +87,9 @@ namespace GXPEngine.UI
             _horizontalAlignment = horizontal;
             _verticalAlignment = vertical;
         }
+        /// <summary>Create a level for the current scene with the provided filename used for the notes of the level</summary>
+        /// <param name="filename">The filename of the midi file used for the noted in the level</param>
+        public void CreateLevel(string filename) { _sceneLevel = new Level(filename); game.OnAfterStep += _sceneLevel.PlayHitNotes; }
 
         private void SetAnchor(Sprite obj)
         {

@@ -1,27 +1,31 @@
-﻿using System;
-using System.Linq;
+﻿using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Core;
-using Melanchall.DryWetMidi.Interaction;
+using System.Linq;
+using System;
+using GXPEngine.UI;
 
 namespace GXPEngine.LevelManager
 {
     internal class SongManager
     {
-        private readonly MidiFile midiFile;
+        private readonly MidiFile _midiFile;
         private SoundChannel _soundChannel;
+        private Level _level;
         private float _startTimer;
         private bool _startDelay;
-        public SongManager()
+
+        public SongManager(MidiFile midiFile, Level level)
         {
-            midiFile = Level.LevelMidiFile;
+            _level = level;
+            _midiFile = midiFile;
             GetData();
-            DataStorage.Instance.MainGame.OnBeforeStep += Update;
+            Game.main.OnBeforeStep += Update;
         }
 
         private void GetData()
         {
-            Note[] array = midiFile.GetNotes().ToArray();
-            foreach (var lane in Level.LevelLanes) lane.SetTimeStamps(array);
+            Note[] array = _midiFile.GetNotes().ToArray();
+            foreach (var lane in _level.LevelLanes) lane.SetTimeStamps(array);
             _startDelay = true;
         }
 
@@ -31,18 +35,18 @@ namespace GXPEngine.LevelManager
             if (_startDelay)
             {
                 _startTimer += Time.deltaTime;
-                if (_startTimer >= Level.SongDelay * 1000)
+                if (_startTimer >= _level.SongDelay * 1000)
                 {
                     _startDelay = false;
                     StartSong();
                 }
             }
-            if (Level.LevelSongTimer != null && Level.LevelSongTimer.IsRunning && !_soundChannel.IsPlaying) Level.LevelSongTimer.Stop();
+            if (_level.LevelSongTimer != null && _level.LevelSongTimer.IsRunning && !_soundChannel.IsPlaying) _level.LevelSongTimer.Stop();
         }
 
         private void StartSong() 
         { 
-            Level.LevelSongTimer.Start();
+            _level.LevelSongTimer.Start();
             _soundChannel = new Sound("test.mp3").Play(false, 0, 0, 0);
         }
     }

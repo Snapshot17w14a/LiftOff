@@ -1,6 +1,6 @@
-﻿using GXPEngine.Core;
+﻿using Melanchall.DryWetMidi.Multimedia;
+using GXPEngine.Core;
 using GXPEngine.UI;
-using Melanchall.DryWetMidi.Multimedia;
 using System;
 
 namespace GXPEngine
@@ -22,21 +22,24 @@ namespace GXPEngine
         private readonly Game _main = Game.main;
 
         //The coodinates of the targets where the enemies will spawn, and where the player can shoot at
-        private readonly Vector2[] _targetVectors = { new Vector2(410, 0), new Vector2(1500, 0), new Vector2(1920, 530), new Vector2(1500, 1080), new Vector2(385, 1080), new Vector2(0, 540) };
-        private readonly Vector2[] _tapVectors = { new Vector2(845, 390), new Vector2(1080, 390), new Vector2(1185, 530), new Vector2(1075, 660), new Vector2(845, 660), new Vector2(735, 530) };
+        private static readonly Vector2[] _targetVectors = { new Vector2(410, 0), new Vector2(1500, 0), new Vector2(1920, 530), new Vector2(1500, 1080), new Vector2(385, 1080), new Vector2(0, 540) };
+        private static readonly Vector2[] _tapVectors = { new Vector2(845, 390), new Vector2(1080, 390), new Vector2(1185, 530), new Vector2(1075, 660), new Vector2(845, 660), new Vector2(735, 530) };
 
         //The keys that the player can use to shoot at the targets
-        private readonly int[] _inputKeys = { Key.E, Key.O, Key.K, Key.M, Key.C, Key.D };
+        private static readonly int[] _inputKeys = { Key.E, Key.O, Key.K, Key.M, Key.C, Key.D };
 
         //The speed of the bullets and the enemies
-        private readonly float _bulletSpeed = 0.3f;
-        private readonly float _enemySpeed = 0.1f;
+        private static readonly float _bulletSpeed = 0.3f;
+        private static readonly float _enemySpeed = 0.1f;
 
         //The time in second between enemy spawns
         private readonly float _enemySpawnInterval = 2;
 
         //Song parameters
-        private readonly float _songDelay = 2; //The delay in seconds before the song starts
+        private static readonly float _songDelay = 2; //The delay in seconds before the song starts
+
+        //Animation parameters
+        private readonly int _animationSpeed = 100; //The speed of the animations
 
         //Set to true if you want to print the mouse data, and use other debug features
         private readonly bool _useDebug = false;
@@ -45,7 +48,7 @@ namespace GXPEngine
         private Scene _testScene;
 
         //The output device for the midi files
-        private readonly OutputDevice _outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
+        private static readonly OutputDevice _outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
 
         //Use this method to initialize the data such as Scenes, objects in Scenes, etc.
         //Look at the documentation of each parameter if you are stuck
@@ -60,19 +63,21 @@ namespace GXPEngine
             //_testSceneCanvas.Fill(0, 0, 0); //Fill the canvas with the given color
             //_testSceneCanvas.Text("Test Scene", 400, 300); //Write the given text on the canvas
             _sceneManager.LoadScene(_testScene); //Load the scene
+            _testScene.CreateLevel("test.mid"); //Create a level with the given filename
             if(_useDebug) Game.main.OnAfterStep += PrintMouseData; //Print the mouse data
         }
         private void PrintMouseData() => Console.WriteLine("Mouse X: " + Input.mouseX + " Mouse Y: " + Input.mouseY);
 
         //Getters and Setters - DO NOT REMOVE
         public Game MainGame => _main;
-        public Vector2[] TargetVectors => _targetVectors;
-        public Vector2[] TapVectors => _tapVectors;
-        public int[] InputKeys => _inputKeys;
-        public float BulletSpeed => _bulletSpeed;
+        public static Vector2[] TargetVectors => _targetVectors;
+        public static Vector2[] TapVectors => _tapVectors;
+        public static int[] InputKeys => _inputKeys;
+        public static float BulletSpeed => _bulletSpeed;
         public float EnemySpeed  => _enemySpeed;
         public float EnemySpawnInterval => _enemySpawnInterval;
-        public float SongDelay => _songDelay;
-        public OutputDevice OutputDevice => _outputDevice;
+        public static float SongDelay => _songDelay;
+        public float AnimationSpeed => _animationSpeed;
+        public static OutputDevice OutputDevice => _outputDevice;
     }
 }

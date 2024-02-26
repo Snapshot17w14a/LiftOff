@@ -8,7 +8,6 @@ public class MyGame : Game
 	{
 		_ = DataStorage.Instance;
 		_ = Player.Instance;
-		_ = Level.Instance;
     }
 
 	static void Main() => new MyGame().Start();

@@ -2,9 +2,11 @@
 {
     internal class SceneManager
     {
-        private static SceneManager _instance;
         private readonly Game _game = Game.main;
+        private static SceneManager _instance;
         private Scene _currentScene;
+
+        public Scene CurrentScene => _currentScene;
 
         private SceneManager() { }
 
