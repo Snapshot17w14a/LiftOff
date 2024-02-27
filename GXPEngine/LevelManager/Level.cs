@@ -1,75 +1,114 @@
-﻿using Melanchall.DryWetMidi.Core;
+﻿using Melanchall.DryWetMidi.MusicTheory;
 using Melanchall.DryWetMidi.Multimedia;
-using Melanchall.DryWetMidi.MusicTheory;
+using Melanchall.DryWetMidi.Core;
 using System.Collections.Generic;
 using System.Diagnostics;
+using GXPEngine.Core;
 using GXPEngine.UI;
+using System;
 
 namespace GXPEngine.LevelManager
 {
-    internal class Level
+    internal class Level : GameObject
     {
         //Tweakable variables for each level c, d, e, g, a, b
         private readonly NoteName[] _laneNotes = { NoteName.C, NoteName.D, NoteName.E, NoteName.G, NoteName.A, NoteName.B };
-        private Lane[] _lanes = new Lane[6];
+        public Lane[] LevelLanes { get; private set; } = new Lane[6];
 
         private readonly double _marginOfError = 0.2; //The margin of error in seconds
         private readonly int inputDelay = 0; //The delay in milliseconds between the input and the note
-        private readonly float noteTime = 2; //The time in seconds it takes for the note to travel from the top to the bottom
-        private MidiFile _midiFile; //The midi file that contains the song
+        private readonly float noteTime = 2; //The time in seconds it takes for the note to travel from the start to the finish
+        public uint CurrentRedTint { get; private set; }
+        public MidiFile LevelMidiFile { get; private set; }
+        public ScoreManager LevelScoreManager { get; private set; }
+        public SongManager LevelSongManager { get; private set; }
+        public Stopwatch LevelSongTimer { get; private set; }
+        public List<TrackChunk> LevelTrackChunks { get; set; }
 
-        private readonly float _songDelay = DataStorage.SongDelay; //The delay in seconds before the song starts
-        private ScoreManager _scoreManager;
-        private SongManager _songManager;
-        private Stopwatch _songTimer;
-        private List<TrackChunk> _trackChunks;
         private Scene _parentScene;
 
         //Getter - DO NOT REMOVE
-        public Lane[] LevelLanes => _lanes;
-        public float SongDelay => _songDelay;
+        public float SongDelay => DataStorage.SongDelay;
         public double MarginOfError => _marginOfError;
         public int InputDelay => inputDelay;
-        public MidiFile LevelMidiFile => _midiFile;
         public float NoteTime => noteTime;
-        public SongManager LevelSongManager => _songManager;
-        public ScoreManager LevelScoreManager => _scoreManager;
-        public Stopwatch LevelSongTimer => _songTimer;
-        public List<TrackChunk> LevelTrackChunks
-        {
-            get => _trackChunks;
-            set => _trackChunks = value;
-        }
 
         public Level(string filename, Scene scene) 
         {
             _parentScene = scene;
             CreateLanes();
             CreateInstances(filename);
+            scene.AddChild(this);
+            scene.SceneUpdate += UpdateRedTint;
+            scene.SceneUpdate += NegateScaleAndRotation;
         }
+
+        private void NegateScaleAndRotation()
+        {
+            rotation += rotation * -1 / 20;
+            _parentScene.Background.rotation += _parentScene.Background.rotation * -1 / 20;
+            scale = scale <= 1 ? 1 : scale >= 1.2f ? 1.2f : scale - 0.0003f; //Clamp the scale
+            _parentScene.Background.scale = _parentScene.Background.scale <= 1 ? 1 : _parentScene.Background.scale >= 1.2f ? 1.2f : _parentScene.Background.scale - 0.0003f; //Clamp the scale
+        }
+
         private void CreateLanes()
         {
-            for (int i = 0; i < _lanes.Length; i++)
+            for (int i = 0; i < LevelLanes.Length; i++)
             {
-                var pos = DataStorage.TargetVectors[i];
-                _lanes[i] = new Lane(i, _laneNotes[i], _parentScene, this) { x = pos.x, y = pos.y };
+                var pos = DataStorage.TargetVectors[i] - new Vector2(game.width / 2, game.height / 2);
+                LevelLanes[i] = new Lane(i, _laneNotes[i], _parentScene, this) { x = pos.x, y = pos.y };
             }
         }
+
         private void CreateInstances(string filename)
         {
-            _midiFile = MidiFile.Read(filename);
-            _trackChunks = new List<TrackChunk>();
-            _scoreManager = new ScoreManager(_parentScene);
-            _songManager = new SongManager(_midiFile, _parentScene, this);
-            _songTimer = new Stopwatch();
+            LevelMidiFile = MidiFile.Read(filename);
+            LevelTrackChunks = new List<TrackChunk>();
+            LevelScoreManager = new ScoreManager(_parentScene, this);
+            LevelSongManager = new SongManager(LevelMidiFile, _parentScene, this);
+            LevelSongTimer = new Stopwatch();
         }
+
+        private void UpdateRedTint()
+        {
+            int num = Mathf.Clamp(LevelScoreManager.ComboScore, 0, 15);
+            CurrentRedTint = Convert.ToUInt32(255 << 16 | 255 - num * 4 << 8 | 255 - num * 4);
+            _parentScene.SetCanvasClearColor(255, 0, 0, num);
+        }
+
         public void PlayHitNotes()
         {
             var tempMidi = new MidiFile();
-            foreach (var chunk in _trackChunks) tempMidi.Chunks.Add(chunk);
-            tempMidi.GetPlayback(DataStorage.OutputDevice).Start();
-            _trackChunks.Clear();
+            foreach (var chunk in LevelTrackChunks) tempMidi.Chunks.Add(chunk);
+            try { tempMidi.GetPlayback(DataStorage.OutputDevice).Start(); }
+            catch { }
+            LevelTrackChunks.Clear();
         }
-        public double GetAudioSourceTime() => (double)_songTimer.ElapsedMilliseconds / 1000;
+
+        public void Shake()
+        {
+            var multiplier = Mathf.Clamp(LevelScoreManager.ComboScore, 0, 15);
+            var randomRotation = Utils.Random(0f, 0.1f);
+            rotation += randomRotation * multiplier;
+            _parentScene.Background.rotation += randomRotation * multiplier;
+            var randomScale = Utils.Random(0f, 0.0015f);
+            scale += randomScale * multiplier;
+            _parentScene.Background.scale += randomScale * multiplier;
+            if(Utils.Random(0f, 1f) <= 0.5f)
+            {
+                rotation *= -1;
+                _parentScene.Background.rotation *= -1;
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            LevelScoreManager.Destroy();
+            LevelSongManager.Destroy();
+            LevelSongTimer.Stop();
+            foreach (var lane in LevelLanes) lane.Destroy();
+        }
+
+        public double GetAudioSourceTime() => (double)LevelSongTimer.ElapsedMilliseconds / 1000;
     }
 }

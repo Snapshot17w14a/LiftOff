@@ -97,6 +97,7 @@
     <Compile Include="UI\Interactables\Button.cs" />
     <Compile Include="UI\Scene.cs" />
     <Compile Include="UI\SceneManager.cs" />
+    <Compile Include="UI\Scenes\SickSongScene.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

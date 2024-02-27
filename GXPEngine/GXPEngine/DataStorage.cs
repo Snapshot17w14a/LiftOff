@@ -2,15 +2,15 @@
 using GXPEngine.UI.Scenes;
 using GXPEngine.Core;
 using GXPEngine.UI;
+using System.Drawing;
 using System;
-
 
 namespace GXPEngine
 {
     internal class DataStorage
     {
         //Singleton class to store the data of the game
-        private DataStorage() { Initialize(); }
+        private DataStorage() { _ = SceneManager.Instance; Initialize(); }
         private static DataStorage _instance;
         public static DataStorage Instance
         {
@@ -21,12 +21,9 @@ namespace GXPEngine
             }
         }
 
-        //Instanticate the SceneManager
-        private readonly SceneManager _sceneManager = SceneManager.Instance;
-
         //The coodinates of the targets where the enemies will spawn, and where the player can shoot at
-        private static readonly Vector2[] _targetVectors = { new Vector2(410, 0), new Vector2(1500, 0), new Vector2(1920, 530), new Vector2(1500, 1080), new Vector2(385, 1080), new Vector2(0, 540) };
-        private static readonly Vector2[] _tapVectors = { new Vector2(845, 390), new Vector2(1080, 390), new Vector2(1185, 530), new Vector2(1075, 660), new Vector2(845, 660), new Vector2(735, 530) };
+        private static readonly Vector2[] _targetVectors = { new Vector2(515, 0), new Vector2(1400, 0), new Vector2(1920, 540), new Vector2(1400, 1080), new Vector2(515, 1080), new Vector2(0, 540) };
+        private static readonly Vector2[] _tapVectors = { new Vector2(915, 465), new Vector2(1000, 465), new Vector2(1050, 540), new Vector2(1010, 620), new Vector2(910, 615), new Vector2(870, 540) };
 
         //The keys that the player can use to shoot at the targets
         private static readonly int[] _inputKeys = { Key.E, Key.O, Key.K, Key.M, Key.C, Key.D };
@@ -38,8 +35,8 @@ namespace GXPEngine
         //The time in second between enemy spawns
         private readonly float _enemySpawnInterval = 2;
 
-        //Song parameters
-        private static readonly float _songDelay = 2; //The delay in seconds before the song starts
+        //The delay in seconds before the song starts
+        private static readonly float _songDelay = 2; 
 
         //Animation parameters
         private readonly int _animationSpeed = 100; //The speed of the animations
@@ -47,16 +44,10 @@ namespace GXPEngine
         //Set to true if you want to print the mouse data, and use other debug features
         private readonly bool _useDebug = false;
 
-
-        //All scenes
-        private static readonly Scene[] _Scenes =
-        {
-            new InitialScene("InitialScene"),
-            new Scene("TestScene")
-        };
+        //The color of the score text
+        private static readonly Color _scoreColor = Color.FromArgb(0xff0063);
 
         //The first scene to be loaded
-        public static Scene FirstSceneToLoad = _Scenes[0];
 
         //The output device for the midi files
         private static readonly OutputDevice _outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
@@ -66,7 +57,14 @@ namespace GXPEngine
         private void Initialize()
         {
             if(_useDebug) Game.main.OnAfterStep += PrintMouseData; //Print the mouse data is debug is enabled
+            InstantiateScenes(); //Instantiate the scenes
             SceneManager.Instance.LoadInitialScene(); //Load the initial scene
+        }
+
+        private void InstantiateScenes()
+        {
+            _ = new InitialScene();
+            _ = new SickSongScene();
         }
         private void PrintMouseData() => Console.WriteLine("Mouse X: " + Input.mouseX + " Mouse Y: " + Input.mouseY);
 
@@ -79,6 +77,7 @@ namespace GXPEngine
         public float EnemySpawnInterval => _enemySpawnInterval;
         public static float SongDelay => _songDelay;
         public float AnimationSpeed => _animationSpeed;
+        public static Color ScoreColor => _scoreColor;
         public static OutputDevice OutputDevice => _outputDevice;
     }
 }

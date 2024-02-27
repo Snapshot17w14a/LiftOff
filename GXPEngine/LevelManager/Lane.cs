@@ -58,7 +58,7 @@ namespace GXPEngine.LevelManager
             {
                 if (_parentLevel.GetAudioSourceTime() >= _timeStamps[spawnIndex] - _parentLevel.NoteTime)
                 {
-                    _noteObjects.Add(new NoteObject(_timeStamps[spawnIndex], _index, _parentScene, _parentLevel) { x = -50, y = -50 });
+                    _noteObjects.Add(new NoteObject(_timeStamps[spawnIndex], _index, _parentLevel) { x = -1010, y = -590 });
                     spawnIndex++;
                 }
             }
@@ -69,6 +69,7 @@ namespace GXPEngine.LevelManager
                 {
                     _parentLevel.LevelTrackChunks.Add(_hitChunk);
                     _parentLevel.LevelScoreManager.Hit();
+                    _parentLevel.Shake();
                 }
                 else _parentLevel.LevelScoreManager.Miss();
                 _noteObjects[0].LateDestroy();
@@ -76,5 +77,14 @@ namespace GXPEngine.LevelManager
         }
 
         public void RemoveNoteFromList(NoteObject obj) { _noteObjects.Remove(obj); }
+
+        protected override void OnDestroy()
+        {
+            for (int i = _noteObjects.Count - 1; i >= 0; i--) { _noteObjects[i].PlayParticle = false; _noteObjects[i].Destroy(); }
+            _parentScene.SceneUpdate -= Update;
+            _timeStamps.Clear();
+            _parentLevel = null;
+            _parentScene = null;
+        }
     }
 }

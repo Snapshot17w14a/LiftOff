@@ -21,25 +21,27 @@ namespace GXPEngine.UI
             }
         }
 
-        /// <summary>Load the scene with the given name, returns false if the scene does not exist, otherwise returns true</summary>
-        /// <param name="sceneName"></param>
-        /// <returns>The name of the scene that was given during instantiation</returns>
+        /// <summary>Load the scene with the given name</summary>
+        /// <param name="sceneName">The name of the scene that was given during instantiation</param>
+        /// <returns>Returns false if the scene does not exist or failed to load, otherwise returns true</returns>
         public bool LoadScene(string sceneName)
         {
             if (!scenes.ContainsKey(sceneName)) return false;
             var game = Game.main;
             if (CurrentScene != null)
             {
-                game.OnAfterStep -= CurrentScene.UpdateObjects;
                 game.RemoveChild(CurrentScene);
+                game.OnAfterStep -= CurrentScene.UpdateObjects;
             }
+            CurrentScene?.OnUnload();
             CurrentScene = scenes[sceneName];
+            CurrentScene?.OnLoad();
             game.AddChild(CurrentScene);
             game.OnAfterStep += CurrentScene.UpdateObjects;
             return true;
         }
 
-        public void LoadInitialScene() => LoadScene("InitialScene");
+        public bool LoadInitialScene() => LoadScene("InitialScene");
         public void AddSceneToDictionary(string sceneName, Scene scene) => scenes.Add(sceneName, scene);
     }
 }

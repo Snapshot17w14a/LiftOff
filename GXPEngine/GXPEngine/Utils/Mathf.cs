@@ -206,6 +206,14 @@ namespace GXPEngine
 			return f < min ? min : (f > max ? max : f);
 		}
 
-	}
+        /// <summary>
+        /// Clamps f in the range [min,max]:
+        /// Returns min if f<min, max if f>max, and f otherwise.
+        /// </summary>
+        public static int Clamp(int f, int min, int max) {
+            return f < min ? min : (f > max ? max : f);
+        }
+
+    }
 }
 

@@ -1,40 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GXPEngine.ParticleSystem;
 using GXPEngine.Core;
-using GXPEngine.ParticleSystem;
-using GXPEngine.UI;
+using System;
 
 namespace GXPEngine.LevelManager
 {
     internal class NoteObject : Sprite
     {
-        private readonly double _timeInstantiated;
-        private readonly double _assignedTime;
-        private readonly Level _parentLevel;
+        private Level _parentLevel;
         private Vector2 _spawnLocation;
         private Vector2 _tapLocation;
-        private int _index;
+        private readonly int _index;
 
-        public double TimeInstantiated => _timeInstantiated;
-        public double AssignedTime => _assignedTime;
-        public int LaneIndex => _index;
-        public NoteObject(double assignedTime, int laneIndex, Scene parentScene, Level level) : base("circle.png", false, false)
+        public double TimeInstantiated { get; protected set; }
+        public double AssignedTime { get; protected set; }
+        public bool PlayParticle { get; set; } = true;
+
+        public NoteObject(double assignedTime, int laneIndex, Level level) : base("circle.png", false, false)
         {            
             SetOrigin(width / 2, height / 2);
             _parentLevel = level;
-            _timeInstantiated = level.GetAudioSourceTime();
-            _assignedTime = assignedTime;
+            TimeInstantiated = level.GetAudioSourceTime();
+            AssignedTime = assignedTime;
             _index = laneIndex;
-            _spawnLocation = DataStorage.TargetVectors[laneIndex];
-            _tapLocation = DataStorage.TapVectors[laneIndex];
-            parentScene.AddChild(this);
+            _spawnLocation = DataStorage.TargetVectors[laneIndex] - new Vector2(game.width / 2, game.height / 2);
+            _tapLocation = DataStorage.TapVectors[laneIndex] - new Vector2(game.width / 2, game.height / 2);
+            level.AddChild(this);
         }
 
         private void Update()
         {
-            double timeSinceInstantiated = _parentLevel.GetAudioSourceTime() - _timeInstantiated;
+            color = _parentLevel.CurrentRedTint;
+            Console.WriteLine(color);
+            double timeSinceInstantiated = _parentLevel.GetAudioSourceTime() - TimeInstantiated;
             float t = (float)(timeSinceInstantiated / _parentLevel.NoteTime);
-            if (t > 1.2f) LateDestroy();
+            if (t > 1.2f) { LateDestroy(); _parentLevel.LevelScoreManager.Miss(); }
             else
             {
                 Vector2 position = Vector2.Lerp(_spawnLocation, _tapLocation, t);
@@ -45,8 +44,9 @@ namespace GXPEngine.LevelManager
 
         protected override void OnDestroy()
         {
-            _parentLevel.LevelLanes[_index].RemoveNoteFromList(this);
-            new Particle("explosion.png", 5, 5) { x = x, y = y };
+            _parentLevel?.LevelLanes[_index].RemoveNoteFromList(this);
+            _parentLevel = null;
+            if(PlayParticle) new Particle("explosion.png", 5, 5) { x = x + game.width / 2, y = y + game.height / 2 };
         }
     }
 }

@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
 using GXPEngine.UI.Interactables;
 using GXPEngine.LevelManager;
-using System;
 using System.Drawing;
+using System;
 
 namespace GXPEngine.UI
 {
     internal class Scene : GameObject
     {
-        public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
-        public string Name { get; private set; }
+
         private Alignment _horizontalAlignment;
         private Alignment _verticalAlignment;
-        private Sprite _background;
-        private Level _sceneLevel;
         private Player _player;
-        public List<Button> Buttons { get; } = new List<Button>();
-        public Level SceneLevel => _sceneLevel;
+
+        public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
+        private Color ClearColor { get; set; } = Color.Transparent;
+        private List<Button> Buttons { get; } = new List<Button>();
+        public bool ClearAfterUpdate { get; set; } = true;
+        public Sprite Background { get; private set; }
+        public string Name { get; private set; }
+        public Level SceneLevel { get;  set; }
 
         ///<summary>Add method to be called every frame for the scene</summary>
         public Action SceneUpdate;
@@ -35,11 +38,8 @@ namespace GXPEngine.UI
 
         public void UpdateObjects()
         {
-            Canvas.Clear(Color.Transparent);
-            foreach (Button button in Buttons)
-            {
-                if (button.HitTestPoint(Input.mouseX, Input.mouseY) && Input.GetMouseButtonDown(0)) { button.OnClick(); }
-            }
+            if(ClearAfterUpdate) Canvas.Clear(ClearColor);
+            foreach (Button button in Buttons) if (Input.GetMouseButtonDown(0) && button.HitTestPoint(Input.mouseX, Input.mouseY)) { button.OnClick(); }
             SceneUpdate?.Invoke();
         }
 
@@ -48,13 +48,13 @@ namespace GXPEngine.UI
         public void SetBackground(string filename)
         {
             RemoveChild(Canvas);
-            _background?.Destroy();
-            _background = new Sprite(filename, false, false);
-            _background.SetOrigin(_background.width / 2, _background.height / 2);
-            _background.SetXY(game.width / 2, game.height / 2);
-            _background.width = game.width;
-            _background.height = game.height;
-            AddChild(_background);
+            Background?.Destroy();
+            Background = new Sprite(filename, false, false);
+            Background.SetOrigin(Background.width / 2, Background.height / 2);
+            Background.SetXY(game.width / 2, game.height / 2);
+            Background.width = game.width;
+            Background.height = game.height;
+            AddChild(Background);
             AddChild(Canvas);
         }
 
@@ -118,8 +118,15 @@ namespace GXPEngine.UI
         public void SetCanvasColor(int red, int green, int blue, int alpha = 255) => Canvas.Fill(red, green, blue, alpha);
 
         /// <summary>Create a level for the current scene with the provided filename used for the notes of the level</summary>
-        /// <param name="filename">The filename of the midi file used for the noted in the level</param>
-        public void CreateLevel(string filename, Scene scene) { _sceneLevel = new Level(filename, scene); SceneUpdate += _sceneLevel.PlayHitNotes; }
+        /// <param name="filename">The filename of the midi file used for the notes in the level</param>
+        public void CreateLevel(string filename) { SceneLevel = new Level(filename, this) { x = Game.main.width / 2, y = Game.main.height / 2 }; SceneUpdate += SceneLevel.PlayHitNotes; }
+
+        /// <summary>Set the clear color of the canvas</summary>
+        /// <param name="red">The red value of the color from 0-255</param>
+        /// <param name="green">The green value of the color from 0-255</param>
+        /// <param name="blue">The blue value of the color from 0-255</param>
+        /// <param name="alpha">The alpha value of the color from 0-255</param>
+        public void SetCanvasClearColor(int red, int green, int blue, int alpha) => ClearColor = Color.FromArgb(alpha, red, green, blue);
 
         /// <summary>Create a player with the given filename and position</summary>
         /// <param name="filename">The filename of the sprite used for the player</param>
@@ -189,5 +196,8 @@ namespace GXPEngine.UI
             }
             obj.SetOrigin(anchorx, anchory);
         }
+
+        public virtual void OnLoad() { }
+        public virtual void OnUnload() { }
     }
 }
