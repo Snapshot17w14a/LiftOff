@@ -12,7 +12,8 @@ namespace GXPEngine.LevelManager
     {
         private readonly NoteName _noteRestiction;
         private TrackChunk _hitChunk;
-        private Level _level;
+        private Scene _parentScene;
+        private Level _parentLevel;
         private int _inputKey;
         private int _index;
         private List<NoteObject> _noteObjects = new List<NoteObject>();
@@ -20,14 +21,15 @@ namespace GXPEngine.LevelManager
 
         int spawnIndex = 0;
 
-        public Lane(int index, NoteName laneNote, Level level)
+        public Lane(int index, NoteName laneNote, Scene scene, Level level)
         {
-            _level = level;
+            _parentLevel = level;
+            _parentScene = scene;
             _inputKey = DataStorage.InputKeys[index];
             _noteRestiction = laneNote;
             _index = index;
             CreateHitNoteTrack();
-            Game.main.OnAfterStep += Update;
+            scene.SceneUpdate += Update;
         }
 
         private void CreateHitNoteTrack()
@@ -44,7 +46,7 @@ namespace GXPEngine.LevelManager
             {
                 if(note.NoteName == _noteRestiction)
                 {
-                    var metricTimeSpan = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, _level.LevelMidiFile.GetTempoMap());
+                    var metricTimeSpan = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, _parentLevel.LevelMidiFile.GetTempoMap());
                     _timeStamps.Add((double)metricTimeSpan.Minutes * 60f + metricTimeSpan.Seconds + (double)metricTimeSpan.Milliseconds / 1000f);
                 }
             }
@@ -54,21 +56,21 @@ namespace GXPEngine.LevelManager
         {
             if (spawnIndex < _timeStamps.Count)
             {
-                if (Level.GetAudioSourceTime() >= _timeStamps[spawnIndex] - _level.NoteTime)
+                if (_parentLevel.GetAudioSourceTime() >= _timeStamps[spawnIndex] - _parentLevel.NoteTime)
                 {
-                    _noteObjects.Add(new NoteObject(_timeStamps[spawnIndex], _index));
+                    _noteObjects.Add(new NoteObject(_timeStamps[spawnIndex], _index, _parentScene, _parentLevel) { x = -50, y = -50 });
                     spawnIndex++;
                 }
             }
             if(Input.GetKeyDown(_inputKey) && _noteObjects.Count != 0)
             {
-                double audioTime = Level.GetAudioSourceTime() - (_level.InputDelay / 1000f);
-                if (Math.Abs(audioTime - _noteObjects[0].AssignedTime) <= _level.MarginOfError)
+                double audioTime = _parentLevel.GetAudioSourceTime() - (_parentLevel.InputDelay / 1000f);
+                if (Math.Abs(audioTime - _noteObjects[0].AssignedTime) <= _parentLevel.MarginOfError)
                 {
-                    _level.LevelTrackChunks.Add(_hitChunk);
-                    _level.LevelScoreManager.Hit();
+                    _parentLevel.LevelTrackChunks.Add(_hitChunk);
+                    _parentLevel.LevelScoreManager.Hit();
                 }
-                else _level.LevelScoreManager.Miss();
+                else _parentLevel.LevelScoreManager.Miss();
                 _noteObjects[0].LateDestroy();
             }
         }

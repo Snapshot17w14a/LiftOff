@@ -1,7 +1,9 @@
 ﻿using Melanchall.DryWetMidi.Multimedia;
+using GXPEngine.UI.Scenes;
 using GXPEngine.Core;
 using GXPEngine.UI;
 using System;
+
 
 namespace GXPEngine
 {
@@ -18,8 +20,9 @@ namespace GXPEngine
                 return _instance;
             }
         }
+
+        //Instanticate the SceneManager
         private readonly SceneManager _sceneManager = SceneManager.Instance;
-        private readonly Game _main = Game.main;
 
         //The coodinates of the targets where the enemies will spawn, and where the player can shoot at
         private static readonly Vector2[] _targetVectors = { new Vector2(410, 0), new Vector2(1500, 0), new Vector2(1920, 530), new Vector2(1500, 1080), new Vector2(385, 1080), new Vector2(0, 540) };
@@ -44,32 +47,30 @@ namespace GXPEngine
         //Set to true if you want to print the mouse data, and use other debug features
         private readonly bool _useDebug = false;
 
-        //The current test scene
-        private Scene _testScene;
+
+        //All scenes
+        private static readonly Scene[] _Scenes =
+        {
+            new InitialScene("InitialScene"),
+            new Scene("TestScene")
+        };
+
+        //The first scene to be loaded
+        public static Scene FirstSceneToLoad = _Scenes[0];
 
         //The output device for the midi files
         private static readonly OutputDevice _outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
 
         //Use this method to initialize the data such as Scenes, objects in Scenes, etc.
         //Look at the documentation of each parameter if you are stuck
-        private void Initialize() 
+        private void Initialize()
         {
-            _testScene = new Scene(); //Create a new Scene
-            _testScene.SetBackground("background.png"); //Set the background of the scene
-            //_testScene.SetAlignment(Scene.Alignment.CENTER, Scene.Alignment.CENTER); //Set the alignment of the scene
-            //_testScene.CreateButton("square.png", 400, 300); //Create a button with the given filename and position
-            //_testScene.CreateButton("square.png", 400, 400, new Scene()); //Create a button with the given filename and position
-            //EasyDraw _testSceneCanvas = _testScene.Canvas; //Get the canvas of the scene
-            //_testSceneCanvas.Fill(0, 0, 0); //Fill the canvas with the given color
-            //_testSceneCanvas.Text("Test Scene", 400, 300); //Write the given text on the canvas
-            _sceneManager.LoadScene(_testScene); //Load the scene
-            _testScene.CreateLevel("test.mid"); //Create a level with the given filename
-            if(_useDebug) Game.main.OnAfterStep += PrintMouseData; //Print the mouse data
+            if(_useDebug) Game.main.OnAfterStep += PrintMouseData; //Print the mouse data is debug is enabled
+            SceneManager.Instance.LoadInitialScene(); //Load the initial scene
         }
         private void PrintMouseData() => Console.WriteLine("Mouse X: " + Input.mouseX + " Mouse Y: " + Input.mouseY);
 
         //Getters and Setters - DO NOT REMOVE
-        public Game MainGame => _main;
         public static Vector2[] TargetVectors => _targetVectors;
         public static Vector2[] TapVectors => _tapVectors;
         public static int[] InputKeys => _inputKeys;

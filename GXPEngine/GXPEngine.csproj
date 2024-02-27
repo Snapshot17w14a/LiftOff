@@ -44,16 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bullet.cs" />
-    <Compile Include="DataStorage.cs" />
-    <Compile Include="Enemy.cs" />
+    <Compile Include="GXPEngine\DataStorage.cs" />
     <Compile Include="GXPEngine\AddOns\Gizmos.cs" />
     <Compile Include="GXPEngine\AddOns\SpriteBatch.cs" />
     <Compile Include="GXPEngine\AddOns\TiledLoader.cs" />
     <Compile Include="LevelManager\Lane.cs" />
     <Compile Include="LevelManager\Level.cs" />
-    <Compile Include="LevelManager\LevelManager.cs" />
     <Compile Include="LevelManager\NoteObject.cs" />
+    <Compile Include="UI\Scenes\InitialScene.cs" />
     <Compile Include="LevelManager\ScoreManager.cs" />
     <Compile Include="LevelManager\SongManager.cs" />
     <Compile Include="MyGame.cs" />
@@ -95,7 +93,7 @@
     <Compile Include="GXPEngine\SoLoud\Soloud.cs" />
     <Compile Include="GXPEngine\SoLoud\SoloudSoundSystem.cs" />
     <Compile Include="ParticleSystem\Particle.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="LevelManager\Playable\Player.cs" />
     <Compile Include="UI\Interactables\Button.cs" />
     <Compile Include="UI\Scene.cs" />
     <Compile Include="UI\SceneManager.cs" />

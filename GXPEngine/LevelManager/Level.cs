@@ -23,6 +23,7 @@ namespace GXPEngine.LevelManager
         private SongManager _songManager;
         private Stopwatch _songTimer;
         private List<TrackChunk> _trackChunks;
+        private Scene _parentScene;
 
         //Getter - DO NOT REMOVE
         public Lane[] LevelLanes => _lanes;
@@ -40,8 +41,9 @@ namespace GXPEngine.LevelManager
             set => _trackChunks = value;
         }
 
-        public Level(string filename) 
+        public Level(string filename, Scene scene) 
         {
+            _parentScene = scene;
             CreateLanes();
             CreateInstances(filename);
         }
@@ -50,15 +52,15 @@ namespace GXPEngine.LevelManager
             for (int i = 0; i < _lanes.Length; i++)
             {
                 var pos = DataStorage.TargetVectors[i];
-                _lanes[i] = new Lane(i, _laneNotes[i], this) { x = pos.x, y = pos.y };
+                _lanes[i] = new Lane(i, _laneNotes[i], _parentScene, this) { x = pos.x, y = pos.y };
             }
         }
         private void CreateInstances(string filename)
         {
             _midiFile = MidiFile.Read(filename);
             _trackChunks = new List<TrackChunk>();
-            _scoreManager = new ScoreManager();
-            _songManager = new SongManager(_midiFile, this);
+            _scoreManager = new ScoreManager(_parentScene);
+            _songManager = new SongManager(_midiFile, _parentScene, this);
             _songTimer = new Stopwatch();
         }
         public void PlayHitNotes()
@@ -68,6 +70,6 @@ namespace GXPEngine.LevelManager
             tempMidi.GetPlayback(DataStorage.OutputDevice).Start();
             _trackChunks.Clear();
         }
-        public static double GetAudioSourceTime() => (double)SceneManager.Instance.CurrentScene.SceneLevel._songTimer.ElapsedMilliseconds / 1000;
+        public double GetAudioSourceTime() => (double)_songTimer.ElapsedMilliseconds / 1000;
     }
 }

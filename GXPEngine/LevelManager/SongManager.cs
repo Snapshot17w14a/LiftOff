@@ -14,12 +14,12 @@ namespace GXPEngine.LevelManager
         private float _startTimer;
         private bool _startDelay;
 
-        public SongManager(MidiFile midiFile, Level level)
+        public SongManager(MidiFile midiFile, Scene scene, Level level)
         {
             _level = level;
             _midiFile = midiFile;
             GetData();
-            Game.main.OnBeforeStep += Update;
+            scene.SceneUpdate += Update;
         }
 
         private void GetData()
@@ -31,7 +31,6 @@ namespace GXPEngine.LevelManager
 
         private void Update()
         {
-            Console.Clear();
             if (_startDelay)
             {
                 _startTimer += Time.deltaTime;

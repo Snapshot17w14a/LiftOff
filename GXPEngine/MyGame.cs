@@ -7,7 +7,6 @@ public class MyGame : Game
 	public MyGame() : base(1920, 1080, false)
 	{
 		_ = DataStorage.Instance;
-		_ = Player.Instance;
     }
 
 	static void Main() => new MyGame().Start();
