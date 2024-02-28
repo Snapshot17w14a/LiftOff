@@ -1,6 +1,4 @@
 ﻿using GXPEngine.UI;
-using System;
-using System.Drawing;
 
 namespace GXPEngine.LevelManager
 {

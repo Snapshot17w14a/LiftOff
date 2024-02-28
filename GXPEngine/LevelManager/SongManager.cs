@@ -51,6 +51,11 @@ namespace GXPEngine.LevelManager
             _soundChannel = new Sound("test.mp3").Play(false, 0, 0, 0);
         }
 
+        public void Reset()
+        {
+            GetData();
+        }
+
         public void Destroy()
         {
             _parentScene.SceneUpdate -= Update;

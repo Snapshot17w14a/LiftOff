@@ -8,16 +8,15 @@ namespace GXPEngine.UI
 {
     internal class Scene : GameObject
     {
-
         private Alignment _horizontalAlignment;
         private Alignment _verticalAlignment;
-        private Player _player;
 
         public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
         private Color ClearColor { get; set; } = Color.Transparent;
         private List<Button> Buttons { get; } = new List<Button>();
         public bool ClearAfterUpdate { get; set; } = true;
         public Sprite Background { get; private set; }
+        public Player Player { get; private set; }
         public string Name { get; private set; }
         public Level SceneLevel { get;  set; }
 
@@ -41,6 +40,7 @@ namespace GXPEngine.UI
             if(ClearAfterUpdate) Canvas.Clear(ClearColor);
             foreach (Button button in Buttons) if (Input.GetMouseButtonDown(0) && button.HitTestPoint(Input.mouseX, Input.mouseY)) { button.OnClick(); }
             SceneUpdate?.Invoke();
+            Draw();
         }
 
         /// <summary>Set the background of the scene</summary>
@@ -119,7 +119,7 @@ namespace GXPEngine.UI
 
         /// <summary>Create a level for the current scene with the provided filename used for the notes of the level</summary>
         /// <param name="filename">The filename of the midi file used for the notes in the level</param>
-        public void CreateLevel(string filename) { SceneLevel = new Level(filename, this) { x = Game.main.width / 2, y = Game.main.height / 2 }; SceneUpdate += SceneLevel.PlayHitNotes; }
+        public void CreateLevel(string filename) { SceneLevel = new Level(filename, this) { x = Game.main.width / 2, y = Game.main.height / 2 }; }
 
         /// <summary>Set the clear color of the canvas</summary>
         /// <param name="red">The red value of the color from 0-255</param>
@@ -132,7 +132,7 @@ namespace GXPEngine.UI
         /// <param name="filename">The filename of the sprite used for the player</param>
         /// <param name="x">X position</param>
         /// <param name="y">Y position</param>
-        public void CreatePlayer(string filename, int x, int y) { _player = new Player(filename); SetAnchor(_player); _player.SetXY(x, y); AddChild(_player); }
+        public void CreatePlayer(string filename, int x, int y) { Player = new Player(filename); SetAnchor(Player); Player.SetXY(x, y); AddChild(Player); }
 
         private void SetCanvasAlignment()
         {
@@ -197,7 +197,11 @@ namespace GXPEngine.UI
             obj.SetOrigin(anchorx, anchory);
         }
 
+        /// <summary>The draw method for the scene, gets called after every frame</summary>
+        protected virtual void Draw() { }
+        /// <summary>The OnLoad gets called when the scene gets loaded</summary>
         public virtual void OnLoad() { }
+        /// <summary>The OnUnload gets called when the scene gets unloaded</summary>
         public virtual void OnUnload() { }
     }
 }

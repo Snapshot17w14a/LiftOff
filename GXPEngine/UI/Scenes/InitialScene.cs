@@ -17,9 +17,10 @@ namespace GXPEngine.UI.Scenes
             SceneUpdate += Draw;
         }
 
-        void Draw()
+        protected override void Draw()
         {
             Canvas.Text("Sicc Ducc Gameeeeee", Game.main.width / 2, 96);
+            Canvas.Text("Press any key to play", Game.main.width / 2, 700);
         }
     }
 }

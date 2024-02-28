@@ -19,7 +19,7 @@ namespace GXPEngine.UI.Scenes
             SetAlignment(Alignment.CENTER, Alignment.CENTER, true); //Set the alignment of the objects in the scene's canvas
             Canvas.TextFont(Utils.LoadFont("Foont.ttf", 48));
             SetAlignment(Alignment.CENTER, Alignment.CENTER); //Set the alignment of the scene
-            CreatePlayer("circle.png", Game.main.width / 2, Game.main.height / 2); //Create a player with the given filename and position
+            CreatePlayer("triangle.png", Game.main.width / 2, Game.main.height / 2); //Create a player with the given filename and position
             CreateButton("square.png", 300, 300, "InitialScene"); //Create a button with the given filename and position
         }
 
