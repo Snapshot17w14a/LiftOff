@@ -47,6 +47,13 @@ namespace GXPEngine.Core
             return angleInDegrees;
         }
 
+        public static float CalculateAngle(Vector2 target, Vector2 current)
+        {
+			var dir = target - current;
+			var angle = Mathf.Atan2(dir.x, dir.y) * (180 / (float)Math.PI);
+			return angle;
+        }
+
         public float Magnitude() => (float)Math.Sqrt(x * x + y * y);
 		public float DistanceTo(Vector2 other) => (this - other).Magnitude();
         public static float Dot(Vector2 a, Vector2 b) => a.x * b.x + a.y * b.y;

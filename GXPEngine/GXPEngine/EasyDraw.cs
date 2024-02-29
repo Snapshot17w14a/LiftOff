@@ -365,17 +365,31 @@ namespace GXPEngine
 			height = size.Height;
 		}
 
-		//////////// Draw Shapes
-		 
-		/// <summary>
-		/// Draw an (axis aligned) rectangle with given width and height, using the current stroke and fill settings. 
-		/// Uses the current ShapeAlign values to position the rectangle relative to the point (x,y)
-		/// </summary>
-		/// <param name="x">x position in canvas coordinates</param>
-		/// <param name="y">y position in canvas coordinates</param>
-		/// <param name="width">width in pixels</param>
-		/// <param name="height">height in pixels</param>
-		public void Rect(float x, float y, float width, float height) {
+        /// <summary>
+        /// Returns the width and height in pixels of a string, when rendered with the current font.
+        /// </summary>
+        /// <param name="text">input string</param>
+        /// <param name="width">width in pixels</param>
+        /// <param name="height">height in pixels</param>
+		/// <param name="font">The font to use for the text</param>
+        public void TextDimensions(string text, out float width, out float height, Font font)
+        {
+            SizeF size = graphics.MeasureString(text, font);
+            width = size.Width;
+            height = size.Height;
+        }
+
+        //////////// Draw Shapes
+
+        /// <summary>
+        /// Draw an (axis aligned) rectangle with given width and height, using the current stroke and fill settings. 
+        /// Uses the current ShapeAlign values to position the rectangle relative to the point (x,y)
+        /// </summary>
+        /// <param name="x">x position in canvas coordinates</param>
+        /// <param name="y">y position in canvas coordinates</param>
+        /// <param name="width">width in pixels</param>
+        /// <param name="height">height in pixels</param>
+        public void Rect(float x, float y, float width, float height) {
 			ShapeAlign (ref x, ref y, width, height);
 			if (_fill) {
 				graphics.FillRectangle (brush, x, y, width, height);

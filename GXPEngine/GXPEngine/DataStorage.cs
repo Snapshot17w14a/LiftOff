@@ -22,7 +22,7 @@ namespace GXPEngine
         }
 
         //The coodinates of the targets where the enemies will spawn, and where the player can shoot at
-        private static readonly Vector2[] _targetVectors = { new Vector2(515, 0), new Vector2(1400, 0), new Vector2(1920, 540), new Vector2(1400, 1080), new Vector2(515, 1080), new Vector2(0, 540) };
+        private static readonly Vector2[] _spawnVectors = { new Vector2(515, 0), new Vector2(1400, 0), new Vector2(1920, 540), new Vector2(1400, 1080), new Vector2(515, 1080), new Vector2(0, 540) };
         private static readonly Vector2[] _tapVectors = { new Vector2(915, 465), new Vector2(1000, 465), new Vector2(1050, 540), new Vector2(1010, 620), new Vector2(910, 615), new Vector2(870, 540) };
 
         //The keys that the player can use to shoot at the targets
@@ -36,10 +36,10 @@ namespace GXPEngine
         private readonly float _enemySpawnInterval = 2;
 
         //The delay in seconds before the song starts
-        private static readonly float _songDelay = 2; 
+        private static readonly float _songDelay = 2;
 
         //Animation parameters
-        private readonly int _animationSpeed = 100; //The speed of the animations
+        private readonly int _animationSpeed = 1; //The speed of the animations
 
         //Set to true if you want to print the mouse data, and use other debug features
         private readonly bool _useDebug = false;
@@ -69,7 +69,7 @@ namespace GXPEngine
         private void PrintMouseData() => Console.WriteLine("Mouse X: " + Input.mouseX + " Mouse Y: " + Input.mouseY);
 
         //Getters and Setters - DO NOT REMOVE
-        public static Vector2[] TargetVectors => _targetVectors;
+        public static Vector2[] SpawnVectors => _spawnVectors;
         public static Vector2[] TapVectors => _tapVectors;
         public static int[] InputKeys => _inputKeys;
         public static float BulletSpeed => _bulletSpeed;

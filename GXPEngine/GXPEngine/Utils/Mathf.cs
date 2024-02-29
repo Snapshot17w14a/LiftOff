@@ -198,13 +198,11 @@ namespace GXPEngine
 			return (float)Math.Truncate (f);
 		}
 
-		/// <summary>
-		/// Clamps f in the range [min,max]:
-		/// Returns min if f<min, max if f>max, and f otherwise.
-		/// </summary>
-		public static float Clamp(float f, float min, float max) {
-			return f < min ? min : (f > max ? max : f);
-		}
+        /// <summary>
+        /// Clamps f in the range [min,max]:
+        /// Returns min if f<min, max if f>max, and f otherwise.
+        /// </summary>
+        public static float Clamp(float f, float min, float max) => f < min ? min : (f > max ? max : f);
 
         /// <summary>
         /// Clamps f in the range [min,max]:
@@ -214,6 +212,17 @@ namespace GXPEngine
             return f < min ? min : (f > max ? max : f);
         }
 
+        static float Flip(float x) => 1 - x;
+
+        public static float Square(float f) => f * f;
+
+        public static float EaseIn(float t) => t * t;
+
+        public static float EaseOut(float t) => Flip(Square(Flip(t)));
+
+        public static float EaseInOut(float t) => Lerp(EaseIn(t), EaseOut(t), t);
+
+        public static float Lerp(float start, float end, float t) => start + (end - start) * Clamp(t, 0, 1);
     }
 }
 

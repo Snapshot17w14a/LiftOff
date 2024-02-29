@@ -7,6 +7,8 @@ namespace GXPEngine.LevelManager
         private readonly Sound _missSound = new Sound("miss.wav");
         private Scene _parentScene;
         private Level _parentLevel;
+
+        public int PlayerLives { get; private set; } = 6;
         public int ComboScore { get; private set; } = 0;
         private int _score = 0;
 
@@ -28,11 +30,13 @@ namespace GXPEngine.LevelManager
         public void Miss()
         {
             _missSound.Play();
+            PlayerLives--;
             ComboScore = 0;
-            _parentLevel.rotation = 0;
             _parentLevel.scale = 1;
-            _parentScene.Background.rotation = 0;
+            _parentLevel.rotation = 0;
             _parentScene.Background.scale = 1;
+            _parentScene.Background.rotation = 0;
+            _parentLevel.MiddlePie.SetPieSprite(PlayerLives);
         }
 
         public void Destroy()

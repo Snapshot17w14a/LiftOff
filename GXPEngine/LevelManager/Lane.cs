@@ -29,14 +29,6 @@ namespace GXPEngine.LevelManager
             scene.SceneUpdate += Update;
         }
 
-        //private void CreateHitNoteTrack()
-        //{
-        //    SevenBitNumber noteNumber = Melanchall.DryWetMidi.MusicTheory.Note.Get(_noteRestiction, 4).NoteNumber;
-        //    var noteOnEvent = new NoteOnEvent(noteNumber, (SevenBitNumber)100);
-        //    var noteOffEvent = new NoteOffEvent(noteNumber, (SevenBitNumber)100) { DeltaTime = 2000 };
-        //    _hitChunk = new TrackChunk(noteOnEvent, noteOffEvent);
-        //}
-
         public void SetTimeStamps(Melanchall.DryWetMidi.Interaction.Note[] array)
         {
             foreach (var note in array)

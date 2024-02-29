@@ -1,7 +1,5 @@
 ﻿using Melanchall.DryWetMidi.MusicTheory;
-using Melanchall.DryWetMidi.Multimedia;
 using Melanchall.DryWetMidi.Core;
-using System.Collections.Generic;
 using System.Diagnostics;
 using GXPEngine.Core;
 using GXPEngine.UI;
@@ -14,26 +12,23 @@ namespace GXPEngine.LevelManager
         //Tweakable variables for each level c, d, e, g, a, b
         private readonly NoteName[] _laneNotes = { NoteName.C, NoteName.D, NoteName.E, NoteName.G, NoteName.A, NoteName.B };
 
-        private readonly int _inputDelay = 0; //The delay in milliseconds between the input and the note
-        private double _marginOfError = 0.2; //The margin of error in seconds
-        private float _noteTime = 2; //The time in seconds it takes for the note to travel from the start to the finish
 
         public Lane[] LevelLanes { get; private set; } = new Lane[6];
         public ScoreManager LevelScoreManager { get; private set; }
         public SongManager LevelSongManager { get; private set; }
         public Stopwatch LevelSongTimer { get; private set; }
         public MidiFile LevelMidiFile { get; private set; }
-        //public List<TrackChunk> LevelTrackChunks { get; set; }
+        public Player LevelPlayer { get; private set; }
+        public Pie MiddlePie { get; private set; }
+        public double MarginOfError { get; private set; } = 0.2; //The margin of error in seconds
         public uint CurrentRedTint { get; private set; }
+        public float NoteTime { get; private set; } = 2; //The time in seconds it takes for the note to travel from the start to the finish
+        public int InputDelay { get; private set; } = 0; //The delay in milliseconds between the input and the note
         public int NoteCount { get; set; }
 
         private readonly Scene _parentScene;
 
-        //Getter - DO NOT REMOVE
         public float SongDelay => DataStorage.SongDelay;
-        public double MarginOfError => _marginOfError;
-        public int InputDelay => _inputDelay;
-        public float NoteTime => _noteTime;
 
         public Level(string filename, Scene scene) 
         {
@@ -47,9 +42,15 @@ namespace GXPEngine.LevelManager
         private void Update()
         {
             if(LevelSongTimer.IsRunning && NoteCount == 0) ResetLevel();
-            //PlayHitNotes();
             NegateScaleAndRotation();
             UpdateRedTint();
+        }
+
+        private void CreatePlayer(string filename, int cols, int rows)
+        {
+            LevelPlayer = new Player(filename, cols, rows);
+            LevelPlayer.SetOrigin(LevelPlayer.width / 2, LevelPlayer.height / 2);
+            AddChild(LevelPlayer);
         }
 
         private void NegateScaleAndRotation()
@@ -64,7 +65,7 @@ namespace GXPEngine.LevelManager
         {
             for (int i = 0; i < LevelLanes.Length; i++)
             {
-                var pos = DataStorage.TargetVectors[i] - new Vector2(game.width / 2, game.height / 2);
+                var pos = DataStorage.SpawnVectors[i] - new Vector2(game.width / 2, game.height / 2);
                 LevelLanes[i] = new Lane(i, _laneNotes[i], _parentScene, this) { x = pos.x, y = pos.y };
             }
         }
@@ -72,10 +73,11 @@ namespace GXPEngine.LevelManager
         private void CreateInstances(string filename)
         {
             LevelMidiFile = MidiFile.Read(filename);
-            //LevelTrackChunks = new List<TrackChunk>();
             LevelScoreManager = new ScoreManager(_parentScene, this);
             LevelSongManager = new SongManager(LevelMidiFile, _parentScene, this);
+            MiddlePie = new Pie("Pies/pie6.png", this);
             LevelSongTimer = new Stopwatch();
+            CreatePlayer("triangle.png", 4, 1);
         }
 
         private void UpdateRedTint()
@@ -87,22 +89,12 @@ namespace GXPEngine.LevelManager
 
         private void ResetLevel()
         {
-            _noteTime -= 0.2f;
-            _marginOfError -= 0.02;
+            NoteTime -= 0.2f;
+            MarginOfError -= 0.02;
             LevelSongTimer.Restart();
             foreach (var lane in LevelLanes) lane.Reset();
             LevelSongManager.Reset();
-            
         }
-
-        //public void PlayHitNotes()
-        //{
-        //    var tempMidi = new MidiFile();
-        //    //foreach (var chunk in LevelTrackChunks) tempMidi.Chunks.Add(chunk);
-        //    //try { tempMidi.GetPlayback(DataStorage.OutputDevice).Start(); }
-        //    //catch { }
-        //    //LevelTrackChunks.Clear();
-        //}
 
         public void Shake()
         {
@@ -124,6 +116,7 @@ namespace GXPEngine.LevelManager
         {
             LevelScoreManager.Destroy();
             LevelSongManager.Destroy();
+            MiddlePie.Destroy();
             LevelSongTimer.Stop();
             foreach (var lane in LevelLanes) lane.Destroy();
         }

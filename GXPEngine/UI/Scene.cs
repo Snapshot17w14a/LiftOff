@@ -13,15 +13,18 @@ namespace GXPEngine.UI
 
         public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
         private Color ClearColor { get; set; } = Color.Transparent;
+        public List<TextObject> TextObjects { get; private set; } = new List<TextObject>();
         private List<Button> Buttons { get; } = new List<Button>();
-        public bool ClearAfterUpdate { get; set; } = true;
+        public bool ClearBeforeUpdate { get; set; } = true;
         public Sprite Background { get; private set; }
+        public Level SceneLevel { get; private set; }
         public Player Player { get; private set; }
+        private Font TextObjectFont { get; set; }
         public string Name { get; private set; }
-        public Level SceneLevel { get;  set; }
 
         ///<summary>Add method to be called every frame for the scene</summary>
         public Action SceneUpdate;
+
         public enum Alignment
         {
             MIN,
@@ -37,7 +40,7 @@ namespace GXPEngine.UI
 
         public void UpdateObjects()
         {
-            if(ClearAfterUpdate) Canvas.Clear(ClearColor);
+            if(ClearBeforeUpdate) Canvas.Clear(ClearColor);
             foreach (Button button in Buttons) if (Input.GetMouseButtonDown(0) && button.HitTestPoint(Input.mouseX, Input.mouseY)) { button.OnClick(); }
             SceneUpdate?.Invoke();
             Draw();
@@ -115,11 +118,16 @@ namespace GXPEngine.UI
             if(isCanvasObject) SetCanvasAlignment();
         }
 
+        /// <summary>Set the color of the canvas</summary>
+        /// <param name="red">The red value of the color from 0-255</param>
+        /// <param name="green">The green value of the color from 0-255</param>
+        /// <param name="blue">The blue value of the color from 0-255</param>
+        /// <param name="alpha">The alpha value of the color from 0-255</param>
         public void SetCanvasColor(int red, int green, int blue, int alpha = 255) => Canvas.Fill(red, green, blue, alpha);
 
         /// <summary>Create a level for the current scene with the provided filename used for the notes of the level</summary>
-        /// <param name="filename">The filename of the midi file used for the notes in the level</param>
-        public void CreateLevel(string filename) { SceneLevel = new Level(filename, this) { x = Game.main.width / 2, y = Game.main.height / 2 }; }
+        /// <param name="filename">The filename of the song file used for the music, and the midi file used for the notes in the level</param>
+        public void CreateLevel(string filename) { SceneLevel = new Level(filename, this) { x = Game.main.width / 2, y = Game.main.height / 2 }; AddChild(SceneLevel); }
 
         /// <summary>Set the clear color of the canvas</summary>
         /// <param name="red">The red value of the color from 0-255</param>
@@ -128,11 +136,20 @@ namespace GXPEngine.UI
         /// <param name="alpha">The alpha value of the color from 0-255</param>
         public void SetCanvasClearColor(int red, int green, int blue, int alpha) => ClearColor = Color.FromArgb(alpha, red, green, blue);
 
-        /// <summary>Create a player with the given filename and position</summary>
-        /// <param name="filename">The filename of the sprite used for the player</param>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        public void CreatePlayer(string filename, int x, int y) { Player = new Player(filename); SetAnchor(Player); Player.SetXY(x, y); AddChild(Player); }
+        public void SetTextObjectFont(string fontName, int size) => TextObjectFont = Utils.LoadFont(fontName, size);
+
+        public TextObject Text(string text, int x, int y, Color col)
+        {
+            Canvas.TextDimensions(text, out float width, out float height, TextObjectFont);
+            var obj = new TextObject(text, Canvas.HorizontalTextAlign, Canvas.VerticalShapeAlign, (int)width, (int)height, TextObjectFont, col) { x = x, y = y};
+            TextObjects.Add(obj);
+            AddChild(obj);
+            SceneUpdate += obj.Draw;
+            return obj;
+        }
+
+
+        public void DestroyLevel() => SceneLevel.LateDestroy();
 
         private void SetCanvasAlignment()
         {
