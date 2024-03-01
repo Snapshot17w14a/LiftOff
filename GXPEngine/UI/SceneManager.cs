@@ -1,5 +1,4 @@
-﻿using GXPEngine.UI.Scenes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GXPEngine.UI
 {
@@ -7,6 +6,7 @@ namespace GXPEngine.UI
     {
         public IDictionary<string, Scene> scenes = new Dictionary<string, Scene>();
         private static SceneManager _instance;
+        private Scene _sceneToLoad;
 
         public Scene CurrentScene { get; private set; }
 
@@ -21,25 +21,40 @@ namespace GXPEngine.UI
             }
         }
 
-        /// <summary>Load the scene with the given name, returns false if the scene does not exist, otherwise returns true</summary>
-        /// <param name="sceneName"></param>
-        /// <returns>The name of the scene that was given during instantiation</returns>
-        public bool LoadScene(string sceneName)
+        private void CheckForFade()
+        { 
+            if (!CurrentScene.IsFadePlaying)
+            {
+                Game.main.OnBeforeStep -= CheckForFade;
+                Load(_sceneToLoad);
+            }
+        }
+
+        /// <summary>Load the scene with the given name</summary>
+        /// <param name="sceneName">The name of the scene that was given during instantiation</param>
+        public void LoadScene(string sceneName)
         {
-            if (!scenes.ContainsKey(sceneName)) return false;
+            if (_sceneToLoad != null) _sceneToLoad = null;
+            CurrentScene?.OnUnload();
+            if (CurrentScene.IsFadePlaying) { _sceneToLoad = scenes[sceneName]; Game.main.OnBeforeStep += CheckForFade; } 
+            else Load(scenes[sceneName]);
+        }
+
+        private void Load(Scene scene)
+        {
             var game = Game.main;
             if (CurrentScene != null)
             {
-                game.OnAfterStep -= CurrentScene.UpdateObjects;
                 game.RemoveChild(CurrentScene);
+                game.OnAfterStep -= CurrentScene.UpdateObjects;
             }
-            CurrentScene = scenes[sceneName];
+            CurrentScene = scene;
+            CurrentScene?.OnLoad();
             game.AddChild(CurrentScene);
             game.OnAfterStep += CurrentScene.UpdateObjects;
-            return true;
         }
 
-        public void LoadInitialScene() => LoadScene("InitialScene");
+        public void LoadInitialScene() => Load(scenes["InitialScene"]);
         public void AddSceneToDictionary(string sceneName, Scene scene) => scenes.Add(sceneName, scene);
     }
 }

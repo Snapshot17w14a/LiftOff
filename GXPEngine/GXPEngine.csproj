@@ -51,6 +51,7 @@
     <Compile Include="LevelManager\Lane.cs" />
     <Compile Include="LevelManager\Level.cs" />
     <Compile Include="LevelManager\NoteObject.cs" />
+    <Compile Include="LevelManager\Pie.cs" />
     <Compile Include="UI\Scenes\InitialScene.cs" />
     <Compile Include="LevelManager\ScoreManager.cs" />
     <Compile Include="LevelManager\SongManager.cs" />
@@ -97,6 +98,8 @@
     <Compile Include="UI\Interactables\Button.cs" />
     <Compile Include="UI\Scene.cs" />
     <Compile Include="UI\SceneManager.cs" />
+    <Compile Include="UI\Scenes\SickSongScene.cs" />
+    <Compile Include="UI\TextObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

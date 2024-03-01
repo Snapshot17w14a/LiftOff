@@ -1,25 +1,34 @@
 ﻿using System.Collections.Generic;
 using GXPEngine.UI.Interactables;
 using GXPEngine.LevelManager;
-using System;
 using System.Drawing;
+using System;
 
 namespace GXPEngine.UI
 {
     internal class Scene : GameObject
     {
-        public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
-        public string Name { get; private set; }
         private Alignment _horizontalAlignment;
         private Alignment _verticalAlignment;
-        private Sprite _background;
-        private Level _sceneLevel;
-        private Player _player;
-        public List<Button> Buttons { get; } = new List<Button>();
-        public Level SceneLevel => _sceneLevel;
+        private bool fadeOut = false;
+        private int fadeAlpha = 0;
+
+        public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
+        private Color ClearColor { get; set; } = Color.Transparent;
+        public List<TextObject> TextObjects { get; private set; } = new List<TextObject>();
+        private List<Button> Buttons { get; } = new List<Button>();
+        public bool IsFadePlaying { get; private set; } = true;
+        public bool ClearBeforeUpdate { get; set; } = true;
+        public int FadeDuration { get; private set; } = 4;
+        public Sprite Background { get; private set; }
+        public EasyDraw Overlay { get; private set; }
+        public Level SceneLevel { get; private set; }
+        private Font TextObjectFont { get; set; }
+        public string Name { get; private set; }
 
         ///<summary>Add method to be called every frame for the scene</summary>
         public Action SceneUpdate;
+
         public enum Alignment
         {
             MIN,
@@ -35,12 +44,11 @@ namespace GXPEngine.UI
 
         public void UpdateObjects()
         {
-            Canvas.Clear(Color.Transparent);
-            foreach (Button button in Buttons)
-            {
-                if (button.HitTestPoint(Input.mouseX, Input.mouseY) && Input.GetMouseButtonDown(0)) { button.OnClick(); }
-            }
+            Canvas.Clear(ClearColor);
+            //if (IsFadePlaying) UpdateFadeColor();
+            foreach (Button button in Buttons) if (Input.GetMouseButtonDown(0) && button.HitTestPoint(Input.mouseX, Input.mouseY)) { button.OnClick(); }
             SceneUpdate?.Invoke();
+            Draw();
         }
 
         /// <summary>Set the background of the scene</summary>
@@ -48,13 +56,13 @@ namespace GXPEngine.UI
         public void SetBackground(string filename)
         {
             RemoveChild(Canvas);
-            _background?.Destroy();
-            _background = new Sprite(filename, false, false);
-            _background.SetOrigin(_background.width / 2, _background.height / 2);
-            _background.SetXY(game.width / 2, game.height / 2);
-            _background.width = game.width;
-            _background.height = game.height;
-            AddChild(_background);
+            Background?.Destroy();
+            Background = new Sprite(filename, false, false);
+            Background.SetOrigin(Background.width / 2, Background.height / 2);
+            Background.SetXY(game.width / 2, game.height / 2);
+            Background.width = game.width;
+            Background.height = game.height;
+            AddChild(Background);
             AddChild(Canvas);
         }
 
@@ -115,17 +123,64 @@ namespace GXPEngine.UI
             if(isCanvasObject) SetCanvasAlignment();
         }
 
+        /// <summary>Set the color of the canvas</summary>
+        /// <param name="red">The red value of the color from 0-255</param>
+        /// <param name="green">The green value of the color from 0-255</param>
+        /// <param name="blue">The blue value of the color from 0-255</param>
+        /// <param name="alpha">The alpha value of the color from 0-255</param>
         public void SetCanvasColor(int red, int green, int blue, int alpha = 255) => Canvas.Fill(red, green, blue, alpha);
 
         /// <summary>Create a level for the current scene with the provided filename used for the notes of the level</summary>
-        /// <param name="filename">The filename of the midi file used for the noted in the level</param>
-        public void CreateLevel(string filename, Scene scene) { _sceneLevel = new Level(filename, scene); SceneUpdate += _sceneLevel.PlayHitNotes; }
+        /// <param name="filename">The filename of the song file used for the music, and the midi file used for the notes in the level</param>
+        public void CreateLevel(string filename) { SceneLevel = new Level(filename, this) { x = Game.main.width / 2, y = Game.main.height / 2 }; AddChild(SceneLevel); }
 
-        /// <summary>Create a player with the given filename and position</summary>
-        /// <param name="filename">The filename of the sprite used for the player</param>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        public void CreatePlayer(string filename, int x, int y) { _player = new Player(filename); SetAnchor(_player); _player.SetXY(x, y); AddChild(_player); }
+        /// <summary>Set the clear color of the canvas</summary>
+        /// <param name="red">The red value of the color from 0-255</param>
+        /// <param name="green">The green value of the color from 0-255</param>
+        /// <param name="blue">The blue value of the color from 0-255</param>
+        /// <param name="alpha">The alpha value of the color from 0-255</param>
+        public void SetCanvasClearColor(int red, int green, int blue, int alpha) => ClearColor = Color.FromArgb(alpha, red, green, blue);
+
+        public void SetTextObjectFont(string fontName, int size) => TextObjectFont = Utils.LoadFont(fontName, size);
+
+        public TextObject TextObject(string text, int x, int y, Color col)
+        {
+            Canvas.TextDimensions(text, out float width, out float height, TextObjectFont);
+            var obj = new TextObject(text, Canvas.HorizontalTextAlign, Canvas.VerticalShapeAlign, (int)width, (int)height, TextObjectFont, col) { x = x, y = y};
+            TextObjects.Add(obj);
+            AddChild(obj);
+            SceneUpdate += obj.Draw;
+            return obj;
+        }
+
+        public EasyDraw CreateOverlay(string filename)
+        {
+            Overlay = new EasyDraw(filename, false);
+            AddChild(Overlay);
+            return Overlay;
+        }
+
+        public void ClearOverlay()
+        {
+            Overlay?.Destroy();
+            Overlay = null;
+        }
+
+        public void DestroyLevel()
+        {
+            SceneLevel.LevelPlayer.Destroy();
+            SceneLevel.LateDestroy();
+            SceneLevel = null;
+        }
+
+        private void UpdateFadeColor()
+        {
+            fadeAlpha += fadeOut ? FadeDuration : -FadeDuration;
+            if (!fadeOut && fadeAlpha <= 0) { IsFadePlaying = false; }
+            else if(fadeOut && fadeAlpha >= 255) { IsFadePlaying = false; }
+            if (IsFadePlaying) SetCanvasClearColor(0, 0, 0, fadeAlpha);
+            else SetCanvasClearColor(0, 0, 0, fadeOut ? 255 : 0);
+        }
 
         private void SetCanvasAlignment()
         {
@@ -189,5 +244,12 @@ namespace GXPEngine.UI
             }
             obj.SetOrigin(anchorx, anchory);
         }
+
+        /// <summary>The draw method for the scene, gets called after every frame</summary>
+        protected virtual void Draw() { }
+        /// <summary>The OnLoad gets called when the scene gets loaded</summary>
+        public virtual void OnLoad() { IsFadePlaying = false; fadeAlpha = 255; fadeOut = false; }
+        /// <summary>The OnUnload gets called when the scene gets unloaded</summary>
+        public virtual void OnUnload() { IsFadePlaying = false; fadeAlpha = 0; fadeOut = true; }
     }
 }

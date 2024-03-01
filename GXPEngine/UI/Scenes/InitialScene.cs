@@ -1,21 +1,65 @@
-﻿namespace GXPEngine.UI.Scenes
+﻿using System.Drawing;
+
+namespace GXPEngine.UI.Scenes
 {
     internal class InitialScene : Scene
     {
-        public InitialScene(string sceneName) : base(sceneName) { Initialize(); }
+        private bool[] _textPlayDirection = new bool[1];
+        private float[] _textTimers = new float[1]; 
+
+        public InitialScene() : base("InitialScene") { Initialize(); }
 
         private void Initialize()
         {
-            SetBackground("background.png");
-            //SetAlignment(Scene.Alignment.CENTER, Scene.Alignment.CENTER); //Set the alignment of the scene
-            //CreateButton("square.png", 400, 300); //Create a button with the given filename and position
-            //CreateButton("square.png", 400, 400, new Scene()); //Create a button with the given filename and position
-            SetAlignment(Scene.Alignment.CENTER, Scene.Alignment.CENTER, true); //Set the alignment of the scene
-            Canvas.TextFont(Utils.LoadFont("Foont.ttf", 48));
-            SetAlignment(Scene.Alignment.CENTER, Scene.Alignment.CENTER); //Set the alignment of the scene
-            CreatePlayer("circle.png", Game.main.width / 2, Game.main.height / 2); //Create a player with the given filename and position
-            CreateLevel("test.mid", this); //Create a level with the given filename
-            CreateButton("square.png", 300, 300, "TestScene"); //Create a button with the given filename and position
+            for (int i = 0; i < _textPlayDirection.Length; i++) _textPlayDirection[i] = Utils.Random(0, 100) >= 50;
+            for (int i = 0; i < _textTimers.Length; i++) _textTimers[i] = Utils.Random(0f, 1f);
+            SetBackground("titlebackground.png");
+            SetAlignment(Alignment.CENTER, Alignment.CENTER, true);
+            CreateTexts();
+        }
+
+        protected override void Draw()
+        {
+            for(int i = 0; i < _textTimers.Length; i++) UpdateTimer(i);
+            MoveTitle();
+            CheckInput();
+        }
+
+        private void CheckInput()
+        {
+            if (Input.AnyKey()) SceneManager.Instance.LoadScene("SickScene");
+        }
+
+        private void MoveTitle()
+        {
+            for(int i = 0; i < TextObjects.Count; i++)
+            {
+                TextObjects[i].rotation = Mathf.Lerp(-2, 2, Mathf.EaseInOut(_textTimers[i]));
+                TextObjects[i].scale = Mathf.Lerp(1f, 1.05f, Mathf.EaseInOut(_textTimers[i]) / 2);
+            }
+        }
+
+        private void UpdateTimer(int i)
+        {
+            if (_textPlayDirection[i] && _textTimers[i] >= 1) { _textPlayDirection[i] = false; } //ColorTitle(i); }
+            else if (!_textPlayDirection[i] && _textTimers[i] <= 0) { _textPlayDirection[i] = true; } //ColorTitle(i);}
+            _textTimers[i] += _textPlayDirection[i] ? Time.deltaTime / 1000f : -Time.deltaTime / 1000f;
+        }
+
+        private void CreateTexts()
+        {
+            SetTextObjectFont("Foont.ttf", 32);
+            TextObject("Press any key to play", game.width / 2, 900, Color.FromArgb(3220022));
+        }
+
+        public override void OnUnload()
+        {
+            base.OnUnload();
+        }
+
+        public override void OnLoad()
+        {
+            base.OnLoad();
         }
     }
 }
