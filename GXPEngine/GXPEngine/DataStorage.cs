@@ -26,7 +26,8 @@ namespace GXPEngine
         private static readonly Vector2[] _tapVectors = { new Vector2(915, 465), new Vector2(1000, 465), new Vector2(1050, 540), new Vector2(1010, 620), new Vector2(910, 615), new Vector2(870, 540) };
 
         //The keys that the player can use to shoot at the targets
-        private static readonly int[] _inputKeys = { Key.M, Key.C, Key.D, Key.E, Key.O, Key.K };
+        //private static readonly int[] _inputKeys = { Key.M, Key.C, Key.D, Key.E, Key.O, Key.K };
+        private static readonly int[] _inputKeys = { Key.E, Key.O, Key.K, Key.M, Key.C, Key.D };
 
         //The speed of the bullets and the enemies
         private static readonly float _bulletSpeed = 0.3f;
