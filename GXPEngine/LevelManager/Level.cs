@@ -11,7 +11,10 @@ namespace GXPEngine.LevelManager
     {
         //Tweakable variables for each level c, d, e, g, a, b
         private readonly NoteName[] _laneNotes = { NoteName.C, NoteName.D, NoteName.E, NoteName.G, NoteName.A, NoteName.B };
-
+        private readonly Sound _deathSound = new Sound("ded.wav");
+        private float _overlayTimer = 0f;
+        private bool isGameOver = false;
+        private int _finalScore = 0;
 
         public Lane[] LevelLanes { get; private set; } = new Lane[6];
         public ScoreManager LevelScoreManager { get; private set; }
@@ -41,7 +44,24 @@ namespace GXPEngine.LevelManager
 
         private void Update()
         {
-            if(LevelSongTimer.IsRunning && NoteCount == 0) ResetLevel();
+            if(!isGameOver) GameTick();
+            else
+            {
+                _overlayTimer += Time.deltaTime / 1000f;
+                if (_overlayTimer >= 3) 
+                {
+                    if (_parentScene.Overlay == null) _parentScene.CreateOverlay("gameover.png");
+                    _parentScene.SetAlignment(Scene.Alignment.CENTER, Scene.Alignment.MIN, true);
+                    _parentScene.Canvas.Fill(DataStorage.ScoreColor);
+                    _parentScene.Canvas.Text($"Score: {_finalScore}", Game.main.width / 2, 20);
+                    if (_overlayTimer >= 8) SceneManager.Instance.LoadScene("InitialScene");
+                }
+            }
+        }
+
+        private void GameTick()
+        {
+            if (LevelSongTimer.IsRunning && NoteCount == 0) ResetLevel();
             NegateScaleAndRotation();
             UpdateRedTint();
         }
@@ -49,7 +69,6 @@ namespace GXPEngine.LevelManager
         private void CreatePlayer(string filename, int cols, int rows)
         {
             LevelPlayer = new Player(filename, cols, rows);
-            LevelPlayer.SetOrigin(LevelPlayer.width / 2, LevelPlayer.height / 2);
             AddChild(LevelPlayer);
         }
 
@@ -77,7 +96,7 @@ namespace GXPEngine.LevelManager
             LevelSongManager = new SongManager(LevelMidiFile, _parentScene, this);
             MiddlePie = new Pie("Pies/pie6.png", this);
             LevelSongTimer = new Stopwatch();
-            CreatePlayer("triangle.png", 4, 1);
+            CreatePlayer("granny.png", 3, 6);
         }
 
         private void UpdateRedTint()
@@ -89,11 +108,41 @@ namespace GXPEngine.LevelManager
 
         private void ResetLevel()
         {
-            NoteTime -= 0.2f;
+            NoteTime *= 0.9f;
             MarginOfError -= 0.02;
+            LevelScoreManager.AddLives();
             LevelSongTimer.Restart();
             foreach (var lane in LevelLanes) lane.Reset();
             LevelSongManager.Reset();
+        }
+
+        private void GameOver()
+        {
+            SoundChannel sc = _deathSound.Play();
+            sc.Frequency *= 0.6f;
+            LevelPlayer.GameOver();
+            isGameOver = true;
+            _finalScore = LevelScoreManager.Score;
+            LevelSongManager.StopSong();
+            DestroyObjects();
+        }
+
+        private void DestroyObjects()
+        {
+            LevelScoreManager.Destroy();
+            LevelScoreManager = null;
+            LevelSongManager.Destroy();
+            LevelSongManager = null;
+            MiddlePie.Destroy();
+            MiddlePie = null;
+            LevelSongTimer.Stop();
+            foreach (var lane in LevelLanes) lane.Destroy();
+            
+        }
+
+        public void CheckForGameOver()
+        {
+            if (!isGameOver && LevelScoreManager.PlayerLives <= 0) GameOver();
         }
 
         public void Shake()
@@ -114,11 +163,8 @@ namespace GXPEngine.LevelManager
 
         protected override void OnDestroy()
         {
-            LevelScoreManager.Destroy();
-            LevelSongManager.Destroy();
-            MiddlePie.Destroy();
-            LevelSongTimer.Stop();
-            foreach (var lane in LevelLanes) lane.Destroy();
+            if(!isGameOver) { DestroyObjects(); isGameOver = true; }
+            _parentScene.SceneUpdate -= Update;
         }
 
         public double GetAudioSourceTime() => (double)LevelSongTimer.ElapsedMilliseconds / 1000;

@@ -6,13 +6,17 @@ namespace GXPEngine.LevelManager
     {
         private Level _parentLevel;
 
-        public Pie(string filename, Level parentLevel) : base(filename)
+        public Pie(string filename, Level parentLevel) : base(filename, false, false)
         {
             SetOrigin(width / 2, height / 2);
             _parentLevel = parentLevel;
             _parentLevel.AddChild(this);
         }
 
-        public void SetPieSprite(int lives) => _texture = Texture2D.GetInstance($"Pies/pie{lives}.png");
+        public void SetPieSprite(int lives)
+        {
+            var i = Mathf.Clamp(lives, 0, 6);
+            _texture = Texture2D.GetInstance($"Pies/pie{i}.png");
+        }
     }
 }

@@ -47,10 +47,10 @@ namespace GXPEngine.Core
             return angleInDegrees;
         }
 
-        public static float CalculateAngle(Vector2 target, Vector2 current)
+        public static float CalculateAngle(Vector2 target, Vector2 current, bool xaxis = true)
         {
 			var dir = target - current;
-			var angle = Mathf.Atan2(dir.x, dir.y) * (180 / (float)Math.PI);
+			var angle = xaxis ? Mathf.Atan2(dir.y, dir.x) * (180 / (float)Math.PI) : Mathf.Atan2(dir.x, dir.y) * (180 / (float)Math.PI);
 			return angle;
         }
 

@@ -6,7 +6,6 @@ namespace GXPEngine.LevelManager
 {
     internal class NoteObject : AnimationSprite
     {
-
         private Level _parentLevel;
         private Vector2 _spawnLocation;
         private Vector2 _tapLocation;
@@ -37,15 +36,16 @@ namespace GXPEngine.LevelManager
 
         private void Update()
         {
-            Animate(0.5f);
+            Animate(DataStorage.Instance.AnimationSpeed);
             IsCorrect = CheckIfCorrect();
             color = IsCorrect ? _parentLevel.CurrentRedTint - 0x005555 : _parentLevel.CurrentRedTint;
             double timeSinceInstantiated = _parentLevel.GetAudioSourceTime() - TimeInstantiated;
             float t = (float)(timeSinceInstantiated / _parentLevel.NoteTime);
-            if (t > 1.1f) { LateDestroy(); _parentLevel.LevelScoreManager.Miss(); }
+            if (t >= 1.1f) { LateDestroy(); _parentLevel.LevelScoreManager.Miss(); }
             else Move(t);
         }
-        private void CalculateRotation() => rotation += -Vector2.CalculateAngle(_spawnLocation, _tapLocation);
+
+        private void CalculateRotation() => rotation += -Vector2.CalculateAngle(_spawnLocation, _tapLocation, false);
 
         private void Move(float t)
         {
@@ -58,10 +58,8 @@ namespace GXPEngine.LevelManager
 
         protected override void OnDestroy()
         {
-            _parentLevel.NoteCount--;
-            _parentLevel?.LevelLanes[_index].RemoveNoteFromList(this);
-            _parentLevel = null;
-            if(PlayParticle) new Particle("explosion.png", 5, 5) { x = x + game.width / 2, y = y + game.height / 2 };
+            if(_parentLevel != null) { _parentLevel.NoteCount--; _parentLevel.LevelLanes[_index].RemoveNoteFromList(this); _parentLevel.CheckForGameOver(); _parentLevel = null; }
+            if (PlayParticle) new Particle("explosion.png", 3, 3) { x = x + game.width / 2, y = y + game.height / 2 };
         }
     }
 }

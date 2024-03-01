@@ -49,9 +49,17 @@ namespace GXPEngine.UI.Scenes
         private void CreateTexts()
         {
             SetTextObjectFont("Foont.ttf", 32);
-            Text("Press any key to play", game.width / 2, 900, Color.FromArgb(3220022));
+            TextObject("Press any key to play", game.width / 2, 900, Color.FromArgb(3220022));
         }
 
-        private void ColorTitle(int i) => TextObjects[i].Fill(Color.FromArgb(255, Utils.Random(0, 256), Utils.Random(0, 256), Utils.Random(0, 256)));
+        public override void OnUnload()
+        {
+            base.OnUnload();
+        }
+
+        public override void OnLoad()
+        {
+            base.OnLoad();
+        }
     }
 }

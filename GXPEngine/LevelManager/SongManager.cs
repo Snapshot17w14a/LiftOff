@@ -1,13 +1,14 @@
 ﻿using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Core;
-using System.Linq;
-using System;
 using GXPEngine.UI;
+using System.Linq;
 
 namespace GXPEngine.LevelManager
 {
     internal class SongManager
     {
+        public float SongFrequency { get; set; } = 44100f;
+
         private readonly MidiFile _midiFile;
         private SoundChannel _soundChannel;
         private Level _parentLevel;
@@ -48,8 +49,11 @@ namespace GXPEngine.LevelManager
         private void StartSong() 
         { 
             _parentLevel.LevelSongTimer.Start();
-            _soundChannel = new Sound("test.mp3").Play(false, 0, 0, 0);
+            _soundChannel = new Sound("song.wav").Play(false, 2);
+            _soundChannel.Frequency = SongFrequency;
         }
+
+        public void StopSong() { _soundChannel.Stop(); }
 
         public void Reset()
         {

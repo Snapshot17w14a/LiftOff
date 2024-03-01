@@ -10,15 +10,19 @@ namespace GXPEngine.UI
     {
         private Alignment _horizontalAlignment;
         private Alignment _verticalAlignment;
+        private bool fadeOut = false;
+        private int fadeAlpha = 0;
 
         public EasyDraw Canvas { get; } = new EasyDraw(Game.main.width, Game.main.height, false);
         private Color ClearColor { get; set; } = Color.Transparent;
         public List<TextObject> TextObjects { get; private set; } = new List<TextObject>();
         private List<Button> Buttons { get; } = new List<Button>();
+        public bool IsFadePlaying { get; private set; } = true;
         public bool ClearBeforeUpdate { get; set; } = true;
+        public int FadeDuration { get; private set; } = 4;
         public Sprite Background { get; private set; }
+        public EasyDraw Overlay { get; private set; }
         public Level SceneLevel { get; private set; }
-        public Player Player { get; private set; }
         private Font TextObjectFont { get; set; }
         public string Name { get; private set; }
 
@@ -40,7 +44,8 @@ namespace GXPEngine.UI
 
         public void UpdateObjects()
         {
-            if(ClearBeforeUpdate) Canvas.Clear(ClearColor);
+            Canvas.Clear(ClearColor);
+            //if (IsFadePlaying) UpdateFadeColor();
             foreach (Button button in Buttons) if (Input.GetMouseButtonDown(0) && button.HitTestPoint(Input.mouseX, Input.mouseY)) { button.OnClick(); }
             SceneUpdate?.Invoke();
             Draw();
@@ -138,7 +143,7 @@ namespace GXPEngine.UI
 
         public void SetTextObjectFont(string fontName, int size) => TextObjectFont = Utils.LoadFont(fontName, size);
 
-        public TextObject Text(string text, int x, int y, Color col)
+        public TextObject TextObject(string text, int x, int y, Color col)
         {
             Canvas.TextDimensions(text, out float width, out float height, TextObjectFont);
             var obj = new TextObject(text, Canvas.HorizontalTextAlign, Canvas.VerticalShapeAlign, (int)width, (int)height, TextObjectFont, col) { x = x, y = y};
@@ -148,8 +153,34 @@ namespace GXPEngine.UI
             return obj;
         }
 
+        public EasyDraw CreateOverlay(string filename)
+        {
+            Overlay = new EasyDraw(filename, false);
+            AddChild(Overlay);
+            return Overlay;
+        }
 
-        public void DestroyLevel() => SceneLevel.LateDestroy();
+        public void ClearOverlay()
+        {
+            Overlay?.Destroy();
+            Overlay = null;
+        }
+
+        public void DestroyLevel()
+        {
+            SceneLevel.LevelPlayer.Destroy();
+            SceneLevel.LateDestroy();
+            SceneLevel = null;
+        }
+
+        private void UpdateFadeColor()
+        {
+            fadeAlpha += fadeOut ? FadeDuration : -FadeDuration;
+            if (!fadeOut && fadeAlpha <= 0) { IsFadePlaying = false; }
+            else if(fadeOut && fadeAlpha >= 255) { IsFadePlaying = false; }
+            if (IsFadePlaying) SetCanvasClearColor(0, 0, 0, fadeAlpha);
+            else SetCanvasClearColor(0, 0, 0, fadeOut ? 255 : 0);
+        }
 
         private void SetCanvasAlignment()
         {
@@ -217,8 +248,8 @@ namespace GXPEngine.UI
         /// <summary>The draw method for the scene, gets called after every frame</summary>
         protected virtual void Draw() { }
         /// <summary>The OnLoad gets called when the scene gets loaded</summary>
-        public virtual void OnLoad() { }
+        public virtual void OnLoad() { IsFadePlaying = false; fadeAlpha = 255; fadeOut = false; }
         /// <summary>The OnUnload gets called when the scene gets unloaded</summary>
-        public virtual void OnUnload() { }
+        public virtual void OnUnload() { IsFadePlaying = false; fadeAlpha = 0; fadeOut = true; }
     }
 }
